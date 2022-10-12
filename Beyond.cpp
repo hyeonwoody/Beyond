@@ -10,7 +10,7 @@ int CMain::ParseParam() {
         if (pOption->used){
             job.add_job_todo(pOption);
         }
-        pOption++;
+        pOption++; 
     }
     return 0;
 }
