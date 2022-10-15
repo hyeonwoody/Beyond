@@ -4,13 +4,21 @@
 
 #include "Beyond.h"
 
+int CMain::ProceedJob() {
+    SOptionGroup* pOptionGroup = &option.optionGroup;
+    job.proceed(pOptionGroup);
+    return 0;
+}
+
 int CMain::ParseParam() {
     SMapping* pOption = this->option.optionList;
-    for (int i = 0; i<option.optionIndex; i++){
-        if (pOption->used){
-            job.add_job_todo(pOption);
+
+    for (int i = 0; i<OPTION_NUM; i++){
+        if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
+            job.add(pOption);
         }
-        pOption++; 
+        free(&(this->option.optionList[i]));
+        pOption++;
     }
     return 0;
 }
@@ -23,6 +31,12 @@ int CMain::Main(){
     if (ret = ParseParam()< 0){
         return 3;
     }
+
+    
+    if (ret = ProceedJob() < 0){
+        return 4;
+    }
+
 
     return 0;
 }

@@ -19,6 +19,15 @@ bool used;
 std::string description;  
 };
 
+
+struct SOptionGroup{
+    std::string workPath;
+    std::string currentPath;
+    std::string jobPath;
+    std::string subject;
+    std::string fileName;
+};
+
 class CJob
 {
 public:
@@ -26,7 +35,10 @@ public:
     CJob(){
         
     }
-    bool add_job_todo (SMapping* job);
+    bool add (SMapping* job);
+    bool proceed(SOptionGroup* optionGroup);
+
+    bool fileName(SOptionGroup* optionGroup);
 };
 
 
@@ -36,20 +48,39 @@ class CFileName
 public:
     std::map <std::string, int> format;
     std::string* collection;
+    std::string path;
+
 
 public:
     CFileName (){
+        const unsigned int formatLength = 8;
         format.insert({"title", 0});
+
         format.insert({"episode", 1});
+        format.insert({"E00", 1});
+        format.insert({"E000", 1});
+        format.insert({"S00E00", 1});
+        format.insert({"S00E000", 1});
+
         format.insert({"date", 2});
-        format.insert({"subtitle", 3});
-        format.insert({"resolution", 4});
-        format.insert({"reel", 5});
-        format.insert({"codec", 6});
-        format.insert({"extension", 7});
-        collection = (std::string *) malloc (sizeof(std::string) * format.size());
         
+        format.insert({"subtitle", 3});
+        
+        format.insert({"resolution", 4});
+        
+        format.insert({"reel", 5});
+        
+        format.insert({"codec", 6});
+        
+        format.insert({"extension", 7});
+        int index[formatLength] = {-1,};
+        collection = (std::string *) malloc (sizeof(std::string) * format.size());
     }
+
+    bool proceed(SOptionGroup* info);
+
+    void setPath(std::string newPath) {path = newPath;};
+    std::string getPath(){return path;};
 };
 
 class COption
@@ -68,15 +99,9 @@ public:
         bool c;
     }; 
 
-    struct SOptionGroup{
-        std::string workPath;
-        std::string currentPath;
-        std::string jobPath;
-        std::string subject;
-        std::string fileName;
-    };
 
     SMapping optionList[OPTION_NUM]; //string // index
+    unsigned int optionListIndex;
     unsigned int optionIndex;
     
     SMapping flagList[FLAG_NUM];
@@ -94,8 +119,9 @@ public:
         m_argc = 0;
         m_argv = nullptr;
 
-        
+        optionListIndex = 0;
         optionIndex = 0;
+        
         flagIndex = 0;
 
         memset (&optionGroup, 0, sizeof(SOptionGroup));
@@ -133,6 +159,7 @@ public:
     int Main();
 
     int ParseParam();
+    int ProceedJob();
 
 private:
     
