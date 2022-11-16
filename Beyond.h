@@ -7,7 +7,7 @@
 
 
 #define OPTION_NUM 8
-#define FLAG_NUM 10
+#define FLAG_NUM 4 
 
 #define WINDOWS 0
 
@@ -127,11 +127,12 @@ public:
 
     
 
-    SMapping optionList[OPTION_NUM]; //string // index
+    SMapping* optionList; //string // index
     unsigned int optionListIndex;
     unsigned int optionIndex;
     
-    SMapping flagList[FLAG_NUM];
+    SMapping* flagList;
+    unsigned int flagListIndex;
     unsigned int flagIndex;
 
     SFlagGroup flagGroup;
@@ -149,7 +150,9 @@ public:
         optionListIndex = 0;
         optionIndex = 0;
         
+        flagListIndex = 0;
         flagIndex = 0;
+
 
         memset (&optionGroup, 0, sizeof(SOptionGroup));
         optionGroup.workPath = "W:";
@@ -159,7 +162,8 @@ public:
 
     }
     ~COption(){
-        
+        free(optionList);
+        free(flagList);
     }
 
     bool add_option_insert (SMapping* newMapping);

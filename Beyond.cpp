@@ -17,7 +17,6 @@ int CMain::ParseParam() {
         if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
             job.add(pOption);
         }
-        //free(&(this->option.optionList[i]));
         pOption++;
     }
     return 0;
@@ -83,19 +82,22 @@ int main(int argc, char* argv[]) {
         
         option->m_argc = argc;
         option->m_argv = argv;
+
+        int ret = 0;
+
+
         // for (int i=0; i<argc; i++){
         //     option->m_argv[i] = (char *) malloc (strlen(argv[i])+1);
         //     memcpy (&option->m_argv[i], argv[i], strlen(argv[i])+1);
         // }
 
-        int ret = 0;
-
         option->Init(); //add option 
         if (ret = GetParam (option) < 0){
             return 2;
         }
-        app.Main();
-        return 0;  
+
+
+
+        return app.Main();
     }
-    return 0;
 }
