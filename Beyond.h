@@ -7,7 +7,7 @@
 
 
 #define OPTION_NUM 8
-#define FLAG_NUM 4 
+#define FLAG_NUM 6 
 
 #define WINDOWS 0
 
@@ -36,8 +36,85 @@ struct SMapping{
     std::string description;  
 };
 
+
 class CJob
 {
+public:
+
+    class CFileName
+    {
+    public:
+        std::map <std::string, int> format;
+        std::string* collection;
+        std::string path;
+
+        int tagIndex = 0;
+        int nameIndex = 0 ;
+        int align = 0;
+
+        std::vector <std::string> fileList; 
+        std::vector <std::string> captionList;
+    public:
+        CFileName (){
+            const unsigned int formatLength = 8;
+            format.insert({"title", 0});
+
+            format.insert({"episode", 1});
+            format.insert({"E00", 1});
+            format.insert({"E000", 1});
+            format.insert({"S00E00", 1});
+            format.insert({"S00E000", 1});
+
+            format.insert({"date", 2});
+            
+            format.insert({"subtitle", 3});
+            
+            format.insert({"resolution", 4});
+            
+            format.insert({"reel", 5});
+            format.insert({"reels", 5});
+            
+            format.insert({"codec", 6});
+            
+            format.insert({"extension", 7});
+
+            collection = (std::string *) malloc (sizeof(std::string) * format.size());
+
+        }
+        ~CFileName (){
+            free(collection);
+        }
+
+
+        bool isFile (unsigned char type);
+        bool isFolder (unsigned char type);
+
+        bool proceed(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+        
+        void setPath(std::string newPath) {path = newPath;};
+        std::string getPath(){return path;};
+
+        std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
+
+        std::string episodeParse(std::string tag, std::vector <std::string> fileName);
+        std::string dateParse(std::vector <std::string> fileName);
+        std::string resolutionParse(int length, std::vector <std::string> fileName);
+        std::string reelsParse(std::vector <std::string> fileName);
+        std::string codecParse(std::vector <std::string> fileName);
+        std::string extensionParse(std::vector <std::string> fileName);
+    };
+
+    class CSymbolicLink
+    {
+    public :
+        bool proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    };
+
+    class CTest
+    {
+    public:
+        int a;
+    };
 public:
     std::vector <SMapping*> jobList;
     CJob(){
@@ -46,78 +123,13 @@ public:
     bool pending (SMapping* job);
     bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
-    bool fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    CFileName* fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    CFileName* pFileName = nullptr;
 
-    bool symbolicLink(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-};
+    CSymbolicLink* symbolicLink(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    CSymbolicLink* pSymbolicLink = nullptr;
 
-
-
-class CFileName
-{
-public:
-    std::map <std::string, int> format;
-    std::string* collection;
-    std::string path;
-
-    int tagIndex = 0;
-    int nameIndex = 0 ;
-    int align = 0;
-
-
-public:
-    CFileName (){
-        const unsigned int formatLength = 8;
-        format.insert({"title", 0});
-
-        format.insert({"episode", 1});
-        format.insert({"E00", 1});
-        format.insert({"E000", 1});
-        format.insert({"S00E00", 1});
-        format.insert({"S00E000", 1});
-
-        format.insert({"date", 2});
-        
-        format.insert({"subtitle", 3});
-        
-        format.insert({"resolution", 4});
-        
-        format.insert({"reel", 5});
-        format.insert({"reels", 5});
-        
-        format.insert({"codec", 6});
-        
-        format.insert({"extension", 7});
-
-        collection = (std::string *) malloc (sizeof(std::string) * format.size());
-    }
-    ~CFileName (){
-        free(collection);
-    }
-
-
-    bool isFile (unsigned char type);
-    bool isFolder (unsigned char type);
-
-    bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-    
-    void setPath(std::string newPath) {path = newPath;};
-    std::string getPath(){return path;};
-
-    std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
-
-    std::string episodeParse(std::string tag, std::vector <std::string> fileName);
-    std::string dateParse(std::vector <std::string> fileName);
-    std::string resolutionParse(int length, std::vector <std::string> fileName);
-    std::string reelsParse(std::vector <std::string> fileName);
-    std::string codecParse(std::vector <std::string> fileName);
-    std::string extensionParse(std::vector <std::string> fileName);
-};
-
-class CSymbolicLink
-{
-public :
-    bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    CTest* pTest = nullptr;
 };
 
 class COption

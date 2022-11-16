@@ -6,19 +6,19 @@
 #include "../Beyond.h"
 #include "../Parse.h"
 
-std::string CFileName::extensionParse (std::vector <std::string> fileName){
+std::string CJob::CJob::CFileName::extensionParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
 
-std::string CFileName::codecParse (std::vector <std::string> fileName){
+std::string CJob::CFileName::codecParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 } 
 
-std::string CFileName::reelsParse (std::vector <std::string> fileName){
+std::string CJob::CFileName::reelsParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
 
-std::string CFileName::resolutionParse(int length, std::vector <std::string> fileName){
+std::string CJob::CFileName::resolutionParse(int length, std::vector <std::string> fileName){
     std::string name = "";
     for (int i = nameIndex - 1; i < nameIndex + length; i++){
         name = fileName[nameIndex] + ".";
@@ -27,10 +27,10 @@ std::string CFileName::resolutionParse(int length, std::vector <std::string> fil
     return name;
 }
 
-std::string CFileName::dateParse(std::vector <std::string> fileName){
+std::string CJob::CFileName::dateParse(std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
-std::string CFileName::episodeParse(std::string tag, std::vector <std::string> fileName){
+std::string CJob::CFileName::episodeParse(std::string tag, std::vector <std::string> fileName){
     enum {
         E00,
         E000,
@@ -63,7 +63,7 @@ std::string CFileName::episodeParse(std::string tag, std::vector <std::string> f
     return name;
 }
 
-// std::string CFileName::phraseParse(int end, std::vector <std::string> fileName){
+// std::string CJob::CFileName::phraseParse(int end, std::vector <std::string> fileName){
 //         std::string title = "";
 //         for (int i = nameIndex; i< nameIndex + end; i++){
 //             title += fileName[i] + " ";
@@ -73,7 +73,7 @@ std::string CFileName::episodeParse(std::string tag, std::vector <std::string> f
 //         return title;
 // }
 
-std::string CFileName::formatParse(int order,std::vector <std::string> fileTag, std::vector <std::string> fileName){
+std::string CJob::CFileName::formatParse(int order,std::vector <std::string> fileTag, std::vector <std::string> fileName){
     std::string name = "";
     int size = fileName.size();
     int length = 0;
@@ -126,15 +126,15 @@ std::string CFileName::formatParse(int order,std::vector <std::string> fileTag, 
     return name;
 }
 
-bool CFileName::isFolder (unsigned char type){
+bool CJob::CFileName::isFolder (unsigned char type){
     return type == 0x04;
 }
 
-bool CFileName::isFile (unsigned char type){
+bool CJob::CFileName::isFile (unsigned char type){
     return type == 0x08;
 }
 
-bool CFileName::proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     std::string path = optionGroup->workPath + "/";
     std::string folderName;
     std::string currentTag = optionGroup->fileTag;
@@ -154,8 +154,6 @@ bool CFileName::proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
 
     
 
-    std::vector <std::string> fileList; 
-    std::vector <std::string> captionList;
     //////////////////////////////
 
 

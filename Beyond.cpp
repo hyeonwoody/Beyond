@@ -12,6 +12,13 @@ int CMain::ProceedJob() {
 }
 
 int CMain::ParseParam() {
+    SMapping* pFlag = this->option.flagList;
+    for (int i = 0; i<FLAG_NUM; i++){
+        if (pFlag->used){ //ommit workpath, currentpath and subject
+            job.pending(pFlag);
+        }
+        pFlag++;
+    }    
     SMapping* pOption = this->option.optionList;
     for (int i = 0; i<OPTION_NUM; i++){
         if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
@@ -19,13 +26,6 @@ int CMain::ParseParam() {
         }
         pOption++;
     }
-    SMapping* pFlag = this->option.flagList;
-    for (int i = 0; i<FLAG_NUM; i++){
-        if (pFlag->used){ //ommit workpath, currentpath and subject
-            job.pending(pFlag);
-        }
-        pOption++;
-    }    
     return 0;
 }
 

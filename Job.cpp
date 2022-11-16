@@ -1,17 +1,19 @@
 #include "Beyond.h"
 
-bool CJob::symbolicLink (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
-    CSymbolicLink symbolicLink;
-
-    symbolicLink.proceed(optionGroup, flagGroup);
-    return true;
+CJob::CSymbolicLink* CJob::symbolicLink (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+    this->pSymbolicLink = new CJob::CSymbolicLink();
+    CSymbolicLink* newSymbolicLink = this->pSymbolicLink;
+    
+    newSymbolicLink->proceed(this, optionGroup, flagGroup);
+    return newSymbolicLink;
 }
 
-bool CJob::fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
-    CFileName fileName;
+CJob::CFileName* CJob::fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+    this->pFileName = new CJob::CFileName();
+    CFileName* newFileName = this->pFileName;
 
-    fileName.proceed(optionGroup, flagGroup);
-    return true; 
+    newFileName->proceed(this, optionGroup, flagGroup);
+    return newFileName; 
 }
 
 bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
@@ -21,11 +23,17 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         jobList.pop_back();
 
         switch (newJob->index){
+            case 2:
+                if (newJob->description[0] == 'O'){
+
+                }
+                else 
+                    pSymbolicLink = symbolicLink(optionGroup, flagGroup);
+                break;
             case 3: //workpath
                 if (newJob->description[0] == 'O') //OptionGroup
-                    fileName(optionGroup, flagGroup);
-                else 
-                    symbolicLink(optionGroup, flagGroup);
+                    pFileName = fileName(optionGroup, flagGroup);
+                else {}
                 break;
             default:
                 break;
