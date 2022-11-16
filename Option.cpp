@@ -1,5 +1,5 @@
 #include "Beyond.h"
-#include "parse.h"
+#include "Parse.h"
 
 bool COption::add_flag_insert (SMapping* newMapping){
     // SMapping* pFlagList = flagList + flagIndex;
@@ -62,7 +62,7 @@ void COption::Init(){
     add_option ("-w,--workpath", optionGroup.workPath,  "workstation path", true);
     add_option ("-c,--currentpath", optionGroup.currentPath, "workplace path", true);
     add_option ("-s,--subject", optionGroup.subject, "job subject", false);
-    add_option ("-f,--filename", optionGroup.fileName, "1: file name allign [Title.Episode.Resolution.Reel.Codec.Extension]", false);
+    add_option ("-f,--fileTag", optionGroup.fileTag, "1: file name allign [Title.Episode.Resolution.Reel.Codec.Extension]", false);
 
     add_flag("-cp,--copy,", flagGroup.copy, "Copy from workstation to workplace");
     add_flag("-sb,--subtitle", flagGroup.subtitle, "subtitle file name");

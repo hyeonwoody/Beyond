@@ -9,15 +9,9 @@
 #define OPTION_NUM 8
 #define FLAG_NUM 10
 
-struct SMapping{
-std::string name;
-void* address;
-unsigned int index;
-bool isInt;
-bool essential;
-bool used;
-std::string description;  
-};
+#define WINDOWS 0
+
+
 
 
 struct SOptionGroup{
@@ -25,7 +19,18 @@ struct SOptionGroup{
     std::string currentPath;
     std::string jobPath;
     std::string subject;
-    std::string fileName;
+    std::string fileTag;
+};
+
+struct SMapping{
+    std::string name;
+    void* address;
+    unsigned int index;
+    bool isInt;
+    ~SMapping(){}
+    bool essential;
+    bool used;
+    std::string description;  
 };
 
 class CJob
@@ -50,6 +55,10 @@ public:
     std::string* collection;
     std::string path;
 
+    int tagIndex = 0;
+    int nameIndex = 0 ;
+    int align = 0;
+
 
 public:
     CFileName (){
@@ -69,18 +78,35 @@ public:
         format.insert({"resolution", 4});
         
         format.insert({"reel", 5});
+        format.insert({"reels", 5});
         
         format.insert({"codec", 6});
         
         format.insert({"extension", 7});
-        int index[formatLength] = {-1,};
+
         collection = (std::string *) malloc (sizeof(std::string) * format.size());
     }
+    ~CFileName (){
+        free(collection);
+    }
+
+
+    bool isFile (unsigned char type);
+    bool isFolder (unsigned char type);
 
     bool proceed(SOptionGroup* info);
-
+    
     void setPath(std::string newPath) {path = newPath;};
     std::string getPath(){return path;};
+
+    std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
+
+    std::string episodeParse(std::string tag, std::vector <std::string> fileName);
+    std::string dateParse(std::vector <std::string> fileName);
+    std::string resolutionParse(int length, std::vector <std::string> fileName);
+    std::string reelsParse(std::vector <std::string> fileName);
+    std::string codecParse(std::vector <std::string> fileName);
+    std::string extensionParse(std::vector <std::string> fileName);
 };
 
 class COption
@@ -99,6 +125,7 @@ public:
         bool c;
     }; 
 
+    
 
     SMapping optionList[OPTION_NUM]; //string // index
     unsigned int optionListIndex;
@@ -131,7 +158,10 @@ public:
         memset (&flagGroup, 0, sizeof(SFlagGroup));
 
     }
-    
+    ~COption(){
+        
+    }
+
     bool add_option_insert (SMapping* newMapping);
 
     template <typename AssignTo>
@@ -152,6 +182,8 @@ class CMain
 public:
     COption option;
     CJob job;
+    
+    
 public:
     CMain(){
     }

@@ -9,7 +9,7 @@ bool CJob::fileName(SOptionGroup* optionGroup){
 
 bool CJob::proceed(SOptionGroup* optionGroup){
     
-    while (!jobList.empty()){
+    while (jobList.size() != 0){
         SMapping *newjob = jobList.back();
         jobList.pop_back();
 
@@ -24,9 +24,11 @@ bool CJob::proceed(SOptionGroup* optionGroup){
 
         std::cout << "new job : "<<newjob->description<<std::endl;
     }
+    return true;
 }
 
 
 bool CJob::add(SMapping* job){
     jobList.push_back(job);
+    return true;
 }

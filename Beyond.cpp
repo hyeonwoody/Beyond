@@ -17,7 +17,7 @@ int CMain::ParseParam() {
         if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
             job.add(pOption);
         }
-        free(&(this->option.optionList[i]));
+        //free(&(this->option.optionList[i]));
         pOption++;
     }
     return 0;
@@ -94,7 +94,8 @@ int main(int argc, char* argv[]) {
         if (ret = GetParam (option) < 0){
             return 2;
         }
-        
-        return app.Main();  
+        app.Main();
+        return 0;  
     }
+    return 0;
 }
