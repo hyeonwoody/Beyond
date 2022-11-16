@@ -1,34 +1,44 @@
 #include "Beyond.h"
 
-bool CJob::fileName(SOptionGroup* optionGroup){
+bool CJob::symbolicLink (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+    CSymbolicLink symbolicLink;
+
+    symbolicLink.proceed(optionGroup, flagGroup);
+    return true;
+}
+
+bool CJob::fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     CFileName fileName;
 
-    fileName.proceed(optionGroup);
+    fileName.proceed(optionGroup, flagGroup);
     return true; 
 }
 
-bool CJob::proceed(SOptionGroup* optionGroup){
+bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     while (jobList.size() != 0){
-        SMapping *newjob = jobList.back();
+        SMapping *newJob = jobList.back();
         jobList.pop_back();
 
-        switch (newjob->index){
+        switch (newJob->index){
             case 3: //workpath
-                fileName(optionGroup);
+                if (newJob->description[0] == 'O') //OptionGroup
+                    fileName(optionGroup, flagGroup);
+                else 
+                    symbolicLink(optionGroup, flagGroup);
                 break;
             default:
                 break;
         }
         
 
-        std::cout << "new job : "<<newjob->description<<std::endl;
+        std::cout << "new job : "<<newJob->description<<std::endl;
     }
     return true;
 }
 
 
-bool CJob::add(SMapping* job){
+bool CJob::pending(SMapping* job){
     jobList.push_back(job);
     return true;
 }

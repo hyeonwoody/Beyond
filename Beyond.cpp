@@ -6,19 +6,26 @@
 
 int CMain::ProceedJob() {
     SOptionGroup* pOptionGroup = &option.optionGroup;
-    job.proceed(pOptionGroup);
+    SFlagGroup* pFlagGroup = &option.flagGroup;
+    job.proceed(pOptionGroup, pFlagGroup);
     return 0;
 }
 
 int CMain::ParseParam() {
     SMapping* pOption = this->option.optionList;
-
     for (int i = 0; i<OPTION_NUM; i++){
         if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
-            job.add(pOption);
+            job.pending(pOption);
         }
         pOption++;
     }
+    SMapping* pFlag = this->option.flagList;
+    for (int i = 0; i<FLAG_NUM; i++){
+        if (pFlag->used){ //ommit workpath, currentpath and subject
+            job.pending(pFlag);
+        }
+        pOption++;
+    }    
     return 0;
 }
 
@@ -59,11 +66,11 @@ int GetParam(COption* option){\
         }
         for (int j = 0; j<FLAG_NUM; j++){
             if (option->flagList[j].name.compare(option->m_argv[i]) == 0){
+                option->flagList[j].used = true;
                 *((bool*)option->flagList[j].address) = true;
             }
         }
     }
-    //cout<<"m_copy"<<boolalpha<<option->flagGroup.copy<<endl;
     return 0;
 }
 

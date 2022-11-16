@@ -12,8 +12,6 @@
 #define WINDOWS 0
 
 
-
-
 struct SOptionGroup{
     std::string workPath;
     std::string currentPath;
@@ -22,12 +20,17 @@ struct SOptionGroup{
     std::string fileTag;
 };
 
+struct SFlagGroup{
+    bool copy;
+    bool subtitle;
+    bool symbolicLink;
+};
+
 struct SMapping{
     std::string name;
     void* address;
     unsigned int index;
     bool isInt;
-    ~SMapping(){}
     bool essential;
     bool used;
     std::string description;  
@@ -40,10 +43,12 @@ public:
     CJob(){
         
     }
-    bool add (SMapping* job);
-    bool proceed(SOptionGroup* optionGroup);
+    bool pending (SMapping* job);
+    bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
-    bool fileName(SOptionGroup* optionGroup);
+    bool fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+
+    bool symbolicLink(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 };
 
 
@@ -94,7 +99,7 @@ public:
     bool isFile (unsigned char type);
     bool isFolder (unsigned char type);
 
-    bool proceed(SOptionGroup* info);
+    bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
     
     void setPath(std::string newPath) {path = newPath;};
     std::string getPath(){return path;};
@@ -109,24 +114,20 @@ public:
     std::string extensionParse(std::vector <std::string> fileName);
 };
 
+class CSymbolicLink
+{
+public :
+    bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+};
+
 class COption
 {
-    
+public:
 public:
     int m_argc;
     char** m_argv;
     
-
-    struct SFlagGroup{
-        bool copy;
-        bool subtitle;
-        bool a;
-        bool b;
-        bool c;
-    }; 
-
     
-
     SMapping* optionList; //string // index
     unsigned int optionListIndex;
     unsigned int optionIndex;
@@ -135,11 +136,8 @@ public:
     unsigned int flagListIndex;
     unsigned int flagIndex;
 
-    SFlagGroup flagGroup;
     SOptionGroup optionGroup;
-
-    
-    
+    SFlagGroup flagGroup;
     
 
 public:
@@ -196,6 +194,7 @@ public:
 
     int ParseParam();
     int ProceedJob();
+public:
 
 private:
     

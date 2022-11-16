@@ -3,8 +3,8 @@
 
 #include <dirent.h>
 
-#include "Beyond.h"
-#include "Parse.h"
+#include "../Beyond.h"
+#include "../Parse.h"
 
 std::string CFileName::extensionParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
@@ -134,10 +134,10 @@ bool CFileName::isFile (unsigned char type){
     return type == 0x08;
 }
 
-bool CFileName::proceed (SOptionGroup* option){
-    std::string path = option->workPath + "/";
+bool CFileName::proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+    std::string path = optionGroup->workPath + "/";
     std::string folderName;
-    std::string currentTag = option->fileTag;
+    std::string currentTag = optionGroup->fileTag;
     std::vector <std::string> vCurrentName;
     std::vector <std::string> vCurrentTag;
 
@@ -166,7 +166,7 @@ bool CFileName::proceed (SOptionGroup* option){
     struct dirent* dp;
     std::string* name;
     dirp = opendir(path.c_str());
-    bool captionExist = false;
+    unsigned int caption = 0;
     int a = 0;
     while (dirp){
         if (dp = readdir(dirp) ){
@@ -175,7 +175,12 @@ bool CFileName::proceed (SOptionGroup* option){
                 std::map<std::string, int>::const_iterator pos = extension.find(tail (dp->d_name, 3));
                 if (pos->second == 0){
                     captionList.push_back(dp->d_name);
-                    captionExist = true;
+                    caption++;
+                }
+                else if (pos->second == 1){
+                    /**
+                     * Write code for SMI -> srt
+                    */
                 }
                 else if (pos->second == 3){
                     fileList.push_back(dp->d_name);
@@ -231,19 +236,19 @@ bool CFileName::proceed (SOptionGroup* option){
         }
         else{
             std::cout<<"success on video"<<std::endl;
-            if (captionExist){
-                if (rename ((path+captionList[i]).c_str(), (path+name+"srt").c_str())){
-                    std::cout<<"error renaming caption"<<std::endl;
-                }
-                else {
-                    std::cout<<"success on caption"<<std::endl;
-                }
-            }
             nameIndex = 0;
             tagIndex = 0;
         }
+        if (flagGroup->subtitle && caption){
+            if (rename ((path+captionList[i]).c_str(), (path+name+"srt").c_str())){
+                std::cout<<"error renaming caption"<<std::endl;
+            }
+            else {
+                std::cout<<"success on caption"<<std::endl;
+            }
+            caption--;
+        }
 
     }
-    
     return 1;
 }
