@@ -135,62 +135,27 @@ bool CJob::CFileName::isFile (unsigned char type){
 }
 
 bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
-    std::string path = optionGroup->workPath + "/";
+    const std::string path = optionGroup->workPath + "/";
     std::string folderName;
     std::string currentTag = optionGroup->fileTag;
     std::vector <std::string> vCurrentName;
     std::vector <std::string> vCurrentTag;
 
-    std::map <std::string, int> extension;
-
-    extension.insert({"srt", 0});
-    extension.insert({"SRT", 0});
-    extension.insert({"smi", 1});
-    extension.insert({"SMI", 1});
-    extension.insert({"txt", 2});
-    extension.insert({"mp4", 3});
-    extension.insert({"MP4", 3});
-
+    std::vector <std::string> fileList;
+    std::vector <std::string> captionList;
 
     
-
-    //////////////////////////////
-
-
-
     std::string fileName[8]= {"",};
-
-    DIR* dirp;
-    struct dirent* dp;
-    std::string* name;
-    dirp = opendir(path.c_str());
-    unsigned int caption = 0;
-    int a = 0;
-    while (dirp){
-        if (dp = readdir(dirp) ){
-            std::cout<<dp->d_name<<std::endl;
-            if (isFile (dp->d_type)){
-                std::map<std::string, int>::const_iterator pos = extension.find(tail (dp->d_name, 3));
-                if (pos->second == 0){
-                    captionList.push_back(dp->d_name);
-                    caption++;
-                }
-                else if (pos->second == 1){
-                    /**
-                     * Write code for SMI -> srt
-                    */
-                }
-                else if (pos->second == 3){
-                    fileList.push_back(dp->d_name);
-                }
-            }
-        }
-        else {
-            break;
-        }
+    
+    CJob::CSubJob* pSubJob = pJob->pSubJob;
+    if (pJob->pSubJob == nullptr){
+        pSubJob = new CJob::CSubJob();
+        pSubJob->getDirectory(path);
     }
-    closedir(dirp);
 
+    fileList = pSubJob->fileList;
+    captionList = pSubJob->captionList;
+    unsigned int caption = pSubJob->captionList.size();
 
     vCurrentTag =  spliter(currentTag, '.');
 
@@ -229,10 +194,12 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             }
             name += fileName[i] + ".";
         }
-        if (rename ((path+fileList[i]).c_str(), (path+name+fileName[7]).c_str()) != 0){
+        name+=fileName[7];
+        if (rename ((path+fileList[i]).c_str(), (path+name).c_str()) != 0){
             std::cout<<"error renaming video"<<std::endl;
         }
         else{
+            pSubJob->fileList[i] = name;
             std::cout<<"success on video"<<std::endl;
             nameIndex = 0;
             tagIndex = 0;

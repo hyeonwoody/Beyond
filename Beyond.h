@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+#include <cstdarg>
 
 #define OPTION_NUM 8
 #define FLAG_NUM 6 
@@ -41,6 +42,20 @@ class CJob
 {
 public:
 
+    class CSubJob
+    {
+    public:
+        bool isFolder(unsigned char type);
+        bool isFile(unsigned char type);
+        bool getDirectory(std::string path);
+        
+        template <typename T>
+        bool updateDB(int _count, T ...);
+
+        std::vector <std::string> fileList; 
+        std::vector <std::string> captionList;
+    };
+
     class CFileName
     {
     public:
@@ -52,10 +67,10 @@ public:
         int nameIndex = 0 ;
         int align = 0;
 
-        std::vector <std::string> fileList; 
-        std::vector <std::string> captionList;
     public:
         CFileName (){
+            const unsigned char featureIndex = 3;
+
             const unsigned int formatLength = 8;
             format.insert({"title", 0});
 
@@ -123,10 +138,10 @@ public:
     bool pending (SMapping* job);
     bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
-    CFileName* fileName(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    CSubJob* pSubJob = nullptr;
+
     CFileName* pFileName = nullptr;
 
-    CSymbolicLink* symbolicLink(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
     CSymbolicLink* pSymbolicLink = nullptr;
 
     CTest* pTest = nullptr;

@@ -2,8 +2,16 @@
 
 bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
+    std::string path = optionGroup->workPath + "/";
+    std::string folderName;
+    std::string currentTag = optionGroup->fileTag;
+    std::vector <std::string> vCurrentName;
+    std::vector <std::string> vCurrentTag;
+   
+
+
     if (pJob->pTest == nullptr){
-        std::cout << "Test is null"  << std::endl;
+        
     }
     if (1){
         std::cout << "it is not nullptr"<<std::endl;
