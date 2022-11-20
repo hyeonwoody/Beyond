@@ -1,17 +1,21 @@
 #include "../Beyond.h"
 
-template <typename T>
-bool CJob::CSubJob::updateDB (int _count, T ...){
-    va_list list;
-    va_list copy;
+bool CJob::CSubJob::updateDB (unsigned int type, bool isFlag){
+    switch(type){
+        case 0:
+            if (isFlag){
 
-    va_start (list, _count);
+            }
+            else{
 
-    for (int i = 0; i < _count; i++){
-        std::cout <<va_arg (copy, T) << " ";
+            }
+        case 1:
+            if (isFlag){
+
+            }
+            else {
+                
+            }
     }
-
-    va_end(list);
-    va_end(copy);
     return true;
 }

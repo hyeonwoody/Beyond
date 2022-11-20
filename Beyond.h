@@ -5,10 +5,11 @@
 #include <vector>
 #include <map>
 
-#include <cstdarg>
 
 #define OPTION_NUM 8
 #define FLAG_NUM 6 
+
+#define DATABASE 1
 
 #define WINDOWS 0
 
@@ -49,18 +50,17 @@ public:
         bool isFile(unsigned char type);
         bool getDirectory(std::string path);
         
-        template <typename T>
-        bool updateDB(int _count, T ...);
+        bool updateDB(unsigned int index, bool isFlag);
 
         std::vector <std::string> fileList; 
         std::vector <std::string> captionList;
+        std::string fileName[8]= {"",};
     };
 
     class CFileName
     {
     public:
         std::map <std::string, int> format;
-        std::string* collection;
         std::string path;
 
         int tagIndex = 0;
@@ -92,17 +92,7 @@ public:
             format.insert({"codec", 6});
             
             format.insert({"extension", 7});
-
-            collection = (std::string *) malloc (sizeof(std::string) * format.size());
-
         }
-        ~CFileName (){
-            free(collection);
-        }
-
-
-        bool isFile (unsigned char type);
-        bool isFolder (unsigned char type);
 
         bool proceed(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         

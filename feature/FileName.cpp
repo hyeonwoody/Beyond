@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <filesystem>
 
 #include <dirent.h>
 
@@ -126,14 +125,6 @@ std::string CJob::CFileName::formatParse(int order,std::vector <std::string> fil
     return name;
 }
 
-bool CJob::CFileName::isFolder (unsigned char type){
-    return type == 0x04;
-}
-
-bool CJob::CFileName::isFile (unsigned char type){
-    return type == 0x08;
-}
-
 bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     const std::string path = optionGroup->workPath + "/";
     std::string folderName;
@@ -147,23 +138,16 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
     
     std::string fileName[8]= {"",};
     
-    CJob::CSubJob* pSubJob = pJob->pSubJob;
     if (pJob->pSubJob == nullptr){
-        pSubJob = new CJob::CSubJob();
-        pSubJob->getDirectory(path);
+        pJob->pSubJob = new CJob::CSubJob();
+        pJob->pSubJob->getDirectory(path);
     }
 
-    fileList = pSubJob->fileList;
-    captionList = pSubJob->captionList;
-    unsigned int caption = pSubJob->captionList.size();
+    fileList = pJob->pSubJob->fileList;
+    captionList = pJob->pSubJob->captionList;
+    unsigned int caption = pJob->pSubJob->captionList.size();
 
     vCurrentTag =  spliter(currentTag, '.');
-
-
-    for (int i = 0; i<vCurrentName.size(); i++){
-        std::cout<<vCurrentName[i]<<std::endl;
-    }
-
 
     for (int i=0; i<fileList.size(); i++){
         std::string index;
@@ -180,6 +164,7 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             if (pos != format.end()){
                 name = formatParse(pos->second, vCurrentTag, vCurrentName);
                 fileName[pos->second] = name;
+                pJob->pSubJob->fileName[pos->second] = name;
             }
             else { 
                 tagIndex++;
@@ -194,12 +179,11 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             }
             name += fileName[i] + ".";
         }
-        name+=fileName[7];
-        if (rename ((path+fileList[i]).c_str(), (path+name).c_str()) != 0){
+        if (rename ((path+fileList[i]).c_str(), (path+name+fileName[7]).c_str()) != 0){
             std::cout<<"error renaming video"<<std::endl;
         }
         else{
-            pSubJob->fileList[i] = name;
+            pJob->pSubJob->fileList[i] = name+fileName[7];
             std::cout<<"success on video"<<std::endl;
             nameIndex = 0;
             tagIndex = 0;
@@ -209,6 +193,7 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
                 std::cout<<"error renaming caption"<<std::endl;
             }
             else {
+                pJob->pSubJob->captionList[i] = name+"srt";
                 std::cout<<"success on caption"<<std::endl;
             }
             caption--;
