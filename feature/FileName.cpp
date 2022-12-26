@@ -134,21 +134,20 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
 
     std::vector <std::string> fileList;
     std::vector <std::string> captionList;
+    std::vector <std::string> symbolicLinkList;
 
     
     std::string fileName[8]= {"",};
     
-    if (pJob->pSubJob == nullptr){
-        pJob->pSubJob = new CJob::CSubJob();
-        pJob->pSubJob->getDirectory(path);
-    }
+    pJob->pSubJob->getDirectory(path);
 
     fileList = pJob->pSubJob->fileList;
     captionList = pJob->pSubJob->captionList;
+
     unsigned int caption = pJob->pSubJob->captionList.size();
 
     vCurrentTag =  spliter(currentTag, '.');
-
+    // fileName = pSubJob->getTag();
     for (int i=0; i<fileList.size(); i++){
         std::string index;
         index = std::to_string(i);
@@ -172,14 +171,17 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             }
             j = tagIndex;
         }
+
         name = "";
-        for (int i=0; i<7; i++){
+        for (int i=0; i<8; i++){
             if (fileName[i] == ""){
                 continue;
             }
             name += fileName[i] + ".";
         }
-        if (rename ((path+fileList[i]).c_str(), (path+name+fileName[7]).c_str()) != 0){
+        name.pop_back();
+
+        if (rename ((path+fileList[i]).c_str(), (path+name).c_str()) != 0){
             std::cout<<"error renaming video"<<std::endl;
         }
         else{
@@ -198,7 +200,9 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             }
             caption--;
         }
-
+    }
+    for (int i=0; i<8; i++){
+        pJob->pSubJob->fileName[i] = fileName[i];
     }
     return 1;
 }

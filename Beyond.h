@@ -14,6 +14,9 @@
 #define WINDOWS 0
 
 
+/**
+ * Configurations
+*/
 struct SOptionGroup{
     std::string workPath;
     std::string currentPath;
@@ -46,15 +49,20 @@ public:
     class CSubJob
     {
     public:
-        bool isFolder(unsigned char type);
-        bool isFile(unsigned char type);
-        bool getDirectory(std::string path);
-        
-        bool updateDB(unsigned int index, bool isFlag);
-
         std::vector <std::string> fileList; 
         std::vector <std::string> captionList;
+        std::vector <std::string> symbolicLinkList;
+         
         std::string fileName[8]= {"",};
+        bool isFolder(unsigned char type);
+        bool isFile(unsigned char type);
+        bool isSymbolicLink (unsigned char type);
+
+        bool getDirectory(std::string path);
+        bool updateDB(unsigned int index, bool isFlag);
+
+
+
     };
 
     class CFileName
@@ -69,9 +77,6 @@ public:
 
     public:
         CFileName (){
-            const unsigned char featureIndex = 3;
-
-            const unsigned int formatLength = 8;
             format.insert({"title", 0});
 
             format.insert({"episode", 1});
@@ -100,7 +105,6 @@ public:
         std::string getPath(){return path;};
 
         std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
-
         std::string episodeParse(std::string tag, std::vector <std::string> fileName);
         std::string dateParse(std::vector <std::string> fileName);
         std::string resolutionParse(int length, std::vector <std::string> fileName);
@@ -118,6 +122,14 @@ public:
     class CTest
     {
     public:
+        CTest()
+        {
+            printf("Constructor : %x\n", this);
+        }
+        ~CTest()
+        {
+            printf("Destructor : %x\n", this);
+        }
         int a;
     };
 public:

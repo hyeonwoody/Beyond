@@ -3,14 +3,18 @@
 #include <ctime>
 
 #include "Beyond.h"
-
+/**
+ * Proceed the jobs that is on pipe.
+*/
 int CMain::ProceedJob() {
     SOptionGroup* pOptionGroup = &option.optionGroup;
     SFlagGroup* pFlagGroup = &option.flagGroup;
     job.proceed(pOptionGroup, pFlagGroup);
     return 0;
 }
-
+/**
+ * Put the jobs on the pipe if it is used.
+*/
 int CMain::ParseParam() {
     SMapping* pFlag = this->option.flagList;
     for (int i = 0; i<FLAG_NUM; i++){
@@ -29,7 +33,10 @@ int CMain::ParseParam() {
     return 0;
 }
 
-
+/**
+ * Actuall Program start here.
+ * Starting to plan what to do based on Param
+*/
 int CMain::Main(){
 
     int ret = 0;
@@ -54,7 +61,10 @@ int GetFeature (unsigned int cotrol){
     return 1;
 }
 
-int GetParam(COption* option){\
+/**
+ * Get param and Compare it with flag and option if it is used or not.
+*/
+int GetParam(COption* option){
     std::cout<<"[GetParam] option->m_argc : "<<option->m_argc<<std::endl;
     for (int i=1; i<option->m_argc; i++){
         for (int j = 0; j<OPTION_NUM; j++){
@@ -84,8 +94,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     else {
-        CMain app;
-        COption* option = &app.option;
+        CMain app; //Actual Program
+        COption* option = &app.option; //options in memory
         
         option->m_argc = argc;
         option->m_argv = argv;
@@ -98,8 +108,8 @@ int main(int argc, char* argv[]) {
         //     memcpy (&option->m_argv[i], argv[i], strlen(argv[i])+1);
         // }
 
-        option->Init(); //add option 
-        if (ret = GetParam (option) < 0){
+        option->Init(); //add option on memory 
+        if (ret = GetParam (option) < 0){ 
             return 2;
         }
 
