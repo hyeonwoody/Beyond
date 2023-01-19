@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>    // fopen, fclose, fread, fwrite, BUFSIZ
 #include <ctime>
+#include <algorithm>
 
 #include "Beyond.h"
 /**
@@ -10,12 +11,37 @@ int CMain::ProceedJob() {
     SOptionGroup* pOptionGroup = &option.optionGroup;
     SFlagGroup* pFlagGroup = &option.flagGroup;
     job.proceed(pOptionGroup, pFlagGroup);
+
     return 0;
 }
+
+/**
+ * Sort Jobs by priority (index)
+*/
+
+    int COMP_BY_INDEX(SMapping* x, SMapping* y){
+        return (x->index != y->index) && (x->index < y->index);
+    }
+
+int CMain::SortJob(){
+    
+    sort (this->job.jobList.begin(), this->job.jobList.end(), COMP_BY_INDEX);
+    return 0;
+}
+
 /**
  * Put the jobs on the pipe if it is used.
 */
 int CMain::ParseParam() {
+
+    SMapping* pOption = this->option.optionList;
+    for (int i = 0; i<OPTION_NUM; i++){
+        if (pOption->used && (pOption->index > 1 )){ //ommit workpath, currentpath and subject
+            job.pending(pOption);
+        }
+        pOption++;
+    }
+
     SMapping* pFlag = this->option.flagList;
     for (int i = 0; i<FLAG_NUM; i++){
         if (pFlag->used){ //ommit workpath, currentpath and subject
@@ -23,13 +49,9 @@ int CMain::ParseParam() {
         }
         pFlag++;
     }    
-    SMapping* pOption = this->option.optionList;
-    for (int i = 0; i<OPTION_NUM; i++){
-        if (pOption->used && (pOption->index > 2 )){ //ommit workpath, currentpath and subject
-            job.pending(pOption);
-        }
-        pOption++;
-    }
+    
+    free(this->option.optionList);
+    free(this->option.flagList);
     return 0;
 }
 
@@ -45,9 +67,15 @@ int CMain::Main(){
         return 3;
     }
 
+    if (ret = SortJob() <0){
+        return 4;
+    }
+    /**
+     * Add Sort Job pending
+    */
     
     if (ret = ProceedJob() < 0){
-        return 4;
+        return 5;
     }
 
 
@@ -114,7 +142,7 @@ int main(int argc, char* argv[]) {
         }
 
 
-
-        return app.Main();
+        app.Main();
+        return 0;
     }
 }

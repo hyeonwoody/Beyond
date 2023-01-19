@@ -1,3 +1,4 @@
+
 #include <dirent.h>
 #include "../Beyond.h"
 #include "../Parse.h"
@@ -34,6 +35,7 @@ bool CJob::CSubJob::getDirectory (std::string path){
     extension.insert({"MP4", 3});
     extension.insert({"mkv", 3});
     extension.insert({"MKV", 3});
+    extension.insert({"pbf", 4});
 
     /**
      * Initialization (captionList.shrink_to_fit())
@@ -42,6 +44,8 @@ bool CJob::CSubJob::getDirectory (std::string path){
     std::vector<std::string>().swap(captionList);
     fileList.clear();
     std::vector<std::string>().swap(fileList);
+    pbfList.clear();
+    std::vector<std::string>().swap(pbfList);
 
     std::cout<<std::endl<<"File List :"<<std::endl;
     while (dirp){
@@ -60,6 +64,9 @@ bool CJob::CSubJob::getDirectory (std::string path){
                 }
                 else if (pos->second == 3){
                     fileList.push_back(dp->d_name);
+                }
+                else if (pos->second == 4){
+                    pbfList.push_back(dp->d_name);
                 }
             }
             else if (isSymbolicLink(dp->d_type)){

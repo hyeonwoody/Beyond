@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 #include <dirent.h>
 
@@ -135,25 +134,27 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
     std::vector <std::string> fileList;
     std::vector <std::string> captionList;
     std::vector <std::string> symbolicLinkList;
+    std::vector <std::string> pbfList;
 
-    
     std::string fileName[8]= {"",};
-    
-    pJob->pSubJob->getDirectory(path);
+        pJob->pSubJob->getDirectory(path);
 
     fileList = pJob->pSubJob->fileList;
     captionList = pJob->pSubJob->captionList;
+    pbfList = pJob->pSubJob->pbfList;
 
     unsigned int caption = pJob->pSubJob->captionList.size();
 
     vCurrentTag =  spliter(currentTag, '.');
     // fileName = pSubJob->getTag();
+
     for (int i=0; i<fileList.size(); i++){
         std::string index;
         index = std::to_string(i);
         std::string name = fileList[i];
         vCurrentName = spaceSpliter (fileList[i], '.');
         int j=0;
+
         while (j<vCurrentTag.size()){
             std::map<std::string, int>::const_iterator pos = format.find(vCurrentTag[tagIndex]);
             if (nameIndex == vCurrentName.size()){
@@ -173,29 +174,37 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
         }
 
         name = "";
-        for (int i=0; i<8; i++){
-            if (fileName[i] == ""){
+        for (int j=0; j<7; j++){
+            if (fileName[j] == ""){
                 continue;
             }
-            name += fileName[i] + ".";
+            name += fileName[j] + ".";
         }
-        name.pop_back();
 
-        if (rename ((path+fileList[i]).c_str(), (path+name).c_str()) != 0){
+        if (rename ((path+fileList[i]).c_str(), (path+name+fileName[7]).c_str()) != 0){
             std::cout<<"error renaming video"<<std::endl;
         }
         else{
-            pJob->pSubJob->fileList[i] = name+fileName[7];
+            if (pbfList.size()){
+                if (rename ((path+pbfList[i]).c_str(), (path+name+"pbf").c_str()) != 0){
+                    std::cout<<"error renaming pbf"<<std::endl;
+                }
+                else {
+                    pbfList[i] = name + "pbf";
+                    std::cout<<"sucess on renaming pbf"<<std::endl;
+                }
+            }
+            fileList[i] = name+fileName[7];
             std::cout<<"success on video"<<std::endl;
             nameIndex = 0;
             tagIndex = 0;
         }
-        if (flagGroup->subtitle && caption){
+        if (caption){
             if (rename ((path+captionList[i]).c_str(), (path+name+"srt").c_str())){
                 std::cout<<"error renaming caption"<<std::endl;
             }
             else {
-                pJob->pSubJob->captionList[i] = name+"srt";
+                captionList[i] = name+"srt";
                 std::cout<<"success on caption"<<std::endl;
             }
             caption--;

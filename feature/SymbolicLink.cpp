@@ -20,7 +20,13 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
 
     CJob::CSubJob* pSubJob = pJob->pSubJob;
     
-    pSubJob->getDirectory(path);
+    if (pJob->pFileName != nullptr){
+        fileList = pSubJob->fileList;
+        captionList = pSubJob->captionList;
+    }
+    else {
+        pSubJob->getDirectory(path);
+    }
     
     fileList = pSubJob->fileList;
     captionList = pSubJob->captionList;
