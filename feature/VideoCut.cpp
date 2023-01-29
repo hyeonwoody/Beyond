@@ -395,7 +395,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         
         //복잡
         //openInput ((path+fileList[1]).c_str());
-        
+        int a = 0;
         openInput ((path+fileList[0]).c_str());
         createOutput((path+"vjfdfdc.mp4").c_str());
         //openCodec ();
