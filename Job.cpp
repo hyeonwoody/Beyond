@@ -2,19 +2,19 @@
 
 bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     this->pSubJob = new CJob::CSubJob();
-
+    SMapping *currentJob;
     for (int i=0; i<jobList.size(); i++){
-        SMapping *newJob = jobList[i];
+        currentJob = jobList[i];
         bool isFlag = false;
 
         this->pTest = new CJob::CTest(); 
         delete this->pTest;
 
-        std::cout << "On Process New Job : "<<newJob->description<<std::endl;
-        unsigned int index = newJob->index;
+        std::cout << "On Process New Job : "<<currentJob->description<<std::endl;
+        unsigned int index = currentJob->index;
         switch (index){
             case 2:
-                if (newJob->description[0] == 'O'){
+                if (currentJob->description[0] == 'O'){
                     this->pFileName = new CJob::CFileName();
                     this->pFileName->proceed(this, optionGroup, flagGroup);
                     delete pFileName;
@@ -27,7 +27,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                 }
                 break;
             case 3: //workpath
-                if (newJob->description[0] == 'O'){ //OptionGroup
+                if (currentJob->description[0] == 'O'){ //OptionGroup
                     
                 } 
                 else { //flagGroup
@@ -39,7 +39,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                 }
                 break;
             case 4: //
-                if (newJob->description[0] == 'O'){ //OptionGroup
+                if (currentJob->description[0] == 'O'){ //OptionGroup
                 } 
                 else {
                     
@@ -52,9 +52,8 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         this->pSubJob->updateDB (index, isFlag);
         #endif
 
-        std::cout << "Completed New Job : "<<newJob->description<<std::endl;
+        std::cout << "Completed New Job : "<<currentJob->description<<std::endl;
     }
-
     return true;
 }
 

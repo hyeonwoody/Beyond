@@ -11,7 +11,7 @@
 bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     std::string path = optionGroup->workPath + "/";
-    std::string newPath ="";
+    std::string currentPath="";
     std::string currentTag = optionGroup->fileTag;
 
     std::vector <std::string> fileList;
@@ -33,18 +33,18 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
     symbolicList = pSubJob->symbolicLinkList;    
     
     mkdir(("/zzz/workstation/Movie/Others/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]).c_str(), 0777);
-    newPath = "/zzz/workstation/Movie/Others/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]+"/";
+    currentPath = "/zzz/workstation/Movie/Others/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]+"/";
 
 
     for (int i = 0; i<fileList.size(); i++){
         std::cout<<"왜 두번 "<<path+fileList[i]<<std::endl;
-        if (symlink ((path+fileList[i]).c_str(), (newPath+fileList[i]).c_str()) != 0){
+        if (symlink ((path+fileList[i]).c_str(), (currentPath+fileList[i]).c_str()) != 0){
             std::cout<<"error on file symbolic"<<std::endl;
         }
     }
 
     for (int i = 0; i<captionList.size(); i++){
-        if (symlink ((path+captionList[i]).c_str(), (newPath+captionList[i]).c_str()) != 0){
+        if (symlink ((path+captionList[i]).c_str(), (currentPath+captionList[i]).c_str()) != 0){
             std::cout<<"error on caption symbolic"<<std::endl;
         }
     }
@@ -52,7 +52,7 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
     
     for (int i = 0; i<symbolicList.size(); i++){
         int source = open ((path+symbolicList[i]).c_str(), O_RDONLY, 0);
-        int dest = open ((newPath+symbolicList[i]).c_str(), O_WRONLY | O_CREAT, 0644);
+        int dest = open ((currentPath+symbolicList[i]).c_str(), O_WRONLY | O_CREAT, 0644);
         struct stat statSource;
         fstat (source, &statSource);
 

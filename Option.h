@@ -40,13 +40,13 @@ public:
     ~COption(){
     }
 
-    bool add_option_insert (SMapping* newMapping);
+    bool add_option_insert (SMapping* currentMapping);
 
     template <typename AssignTo>
     bool add_option(std::string optionName, AssignTo& variable, std::string optionDescription = "", bool essential = false);
 
     
-    bool add_flag_insert (SMapping* newMapping);
+    bool add_flag_insert (SMapping* currentMapping);
     
     bool add_flag(std::string flag_name, bool& variable, std::string flag_description="");
 

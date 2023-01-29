@@ -1,29 +1,29 @@
 #include "Beyond.h"
 #include "Parse.h"
 
-bool COption::add_flag_insert (SMapping* newMapping){
-    memcpy (&this->flagList[flagListIndex], newMapping, sizeof(SMapping));
+bool COption::add_flag_insert (SMapping* currentMapping){
+    memcpy (&this->flagList[flagListIndex], currentMapping, sizeof(SMapping));
     flagListIndex++;
     return true;
 }
 bool COption::add_flag(std::string flagName, bool& variable, std::string flagDescription){
     std::vector <std::string> pFlagName = spliter (flagName, ',');
     for (int i=0; i<pFlagName.size(); i++){
-         SMapping *newMapping = new SMapping ();
-        newMapping->name = pFlagName[i]; 
-        newMapping->index = flagIndex;
-        newMapping->address = &variable;
-        newMapping->description = flagDescription;
-        newMapping->essential = false;
-        newMapping->used = false;
-        add_flag_insert (newMapping);
+        SMapping *currentMapping = new SMapping();
+        currentMapping->name = pFlagName[i]; 
+        currentMapping->index = flagIndex;
+        currentMapping->address = &variable;
+        currentMapping->description = flagDescription;
+        currentMapping->essential = false;
+        currentMapping->used = false;
+        add_flag_insert (currentMapping);
     }
     flagIndex++;
     return true;
 }
 
-bool COption::add_option_insert(SMapping* newMapping){
-    memcpy (&this->optionList[optionListIndex], newMapping, sizeof(SMapping));
+bool COption::add_option_insert(SMapping* currentMapping){
+    memcpy (&this->optionList[optionListIndex], currentMapping, sizeof(SMapping));
     optionListIndex++;
     return true; 
 }
@@ -33,18 +33,17 @@ bool COption::add_option(std::string optionName, AssignTo& variable, std::string
 
     std::vector <std::string> pOptionName = spliter(optionName, ',');
     for (int i=0; i< pOptionName.size(); i++){
-        SMapping *newMapping = new SMapping ();
-        newMapping->name = pOptionName[i]; 
-        newMapping->index = optionIndex;
-        newMapping->address = &variable;
-        newMapping->description = optionDescription;
-        newMapping->essential = essential;
-        newMapping->used = false;
+        SMapping *currentMapping = new SMapping();
+        currentMapping->name = pOptionName[i]; 
+        currentMapping->index = optionIndex;
+        currentMapping->address = &variable;
+        currentMapping->description = optionDescription;
+        currentMapping->essential = essential;
+        currentMapping->used = false;
         
-        add_option_insert(newMapping);
+        add_option_insert(currentMapping);
     }
     optionIndex++;
-
     return true;
 }
 

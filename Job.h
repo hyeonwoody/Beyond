@@ -57,7 +57,7 @@ public:
 
         bool proceed(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         
-        void setPath(std::string newPath) {path = newPath;};
+        void setPath(std::string currentPath) {path = currentPath;};
         std::string getPath(){return path;};
 
         std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
@@ -86,7 +86,7 @@ public:
         bool value = false;
     };
     public :
-        bool proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+        int proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         CJob::CVideoCut::STime* parsePbf (std::string path, std::string file);
     };
 
