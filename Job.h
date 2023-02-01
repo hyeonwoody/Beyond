@@ -82,9 +82,18 @@ public:
         int hour = 0;
         int minute = 0;
         int second = 0;
+        std::string source = "";
         std::string name = "";
         bool value = false;
     };
+
+    struct SVideo{
+        std::string source = "";
+        std::string name = "";
+        int startTime = 0;
+        int endTime = 0;
+    };
+
     public :
         int proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         CJob::CVideoCut::STime* parsePbf (std::string path, std::string file);

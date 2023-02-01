@@ -7,12 +7,9 @@
 #include <cstdlib>
 
 extern "C" {
-    #include <libavformat/avformat.h>
-    #include <libavcodec/avcodec.h>
-    #include <libavutil/opt.h>
+
     #include <libavutil/timestamp.h>
-    #include <libavutil/mathematics.h>
-    #include <libavutil/rational.h>
+    #include <libavformat/avformat.h>
 }
 
 #include <sys/stat.h> // mkdir
@@ -20,269 +17,20 @@ extern "C" {
 #include "../Beyond.h"
 #include "../Parse.h"
 
-typedef struct SFileContext{
-    AVFormatContext* fmtContext;
-    AVCodecParameters* codecParams;
-    AVCodec* codec;
-    AVCodecContext* codecContext;
-    int v_index;
-    int a_index;
-} SFileContext;
-
-struct SRecord{
-    int64_t index;
-    int64_t startTime;
-    int64_t endTime;
+struct SFile {
+    AVFormatContext *formatContext;
+    std::string fileName;
 };
 
-static SFileContext input,output;
+static void logPacket (const AVFormatContext *fmtContext, const AVPacket *pkt, const char *tag){
+    AVRational *timeBase = &fmtContext->streams[pkt->stream_index]->time_base;
 
-static AVOutputFormat *ofmt;
-
-static void release() {
-
-    if (input.fmtContext != NULL){
-        avformat_close_input(&input.fmtContext);
-        avformat_free_context(input.fmtContext);
-    }
-    
-        
-    if (output.fmtContext && !(output.fmtContext->flags & AVFMT_NOFILE))
-        avio_closep(&output.fmtContext->pb);
-    if (input.codecContext != NULL){
-        avcodec_close (input.codecContext);
-    }
-}
-
-static void logPacket(const AVFormatContext *fmt_ctx, const AVPacket *pkt, const char *tag)
-{
-    AVRational *time_base = &fmt_ctx->streams[pkt->stream_index]->time_base;
-    std::cout<< "["<<tag<<"] :" << " pts : " <<pkt->pts<<" dts : "<<pkt->dts<<" duration : " <<pkt->duration <<std::endl;
-    // printf("%s: pts:%s pts_time:%s dts:%s dts_time:%s duration:%s duration_time:%s stream_index:%d\n",
-    //        tag,
-    //        av_ts2str(pkt->pts), av_ts2timestr(pkt->pts, time_base),
-    //        av_ts2str(pkt->dts), av_ts2timestr(pkt->dts, time_base),
-    //        av_ts2str(pkt->duration), av_ts2timestr(pkt->duration, time_base),
-    //        pkt->stream_index);
-}
-
-
-
-static int createOutput (const char* fileName){
-    output.fmtContext = NULL;
-    output.v_index = output.a_index = -1;
-    
-
-    if (avformat_alloc_output_context2 (&output.fmtContext, NULL,NULL, fileName) < 0)
-    {
-        std::cout << "Could not create File"<<std::endl;
-        return -1;
-    }
-
- 
-    for (unsigned index =0; index <input.fmtContext->nb_streams; index++)
-    {
-        if (index !=input.v_index && index!= input.a_index)
-            continue;
-        AVStream* inStream = input.fmtContext->streams[index];
-        input.codecContext = inStream->codec;
-        AVStream* outStream = avformat_new_stream (output.fmtContext, input.codecContext->codec);
-
-        if (!outStream)
-        {
-            std::cout << "Failed to allocate output stream"<<std::endl;
-            return -2;
-        }
-        output.codecContext = outStream->codec;
-        if (avcodec_copy_context(output.codecContext, input.codecContext) < 0)
-        {
-            std::cout << "Error occurred while copying context"<<std::endl;
-            return -3;
-        }
-        output.codecContext->codec_tag = 0;
-
-        if (output.fmtContext->oformat->flags & AVFMT_GLOBALHEADER)
-        {
-            output.codecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-        }
-    }
-
-    av_dump_format (output.fmtContext, 0, fileName, 1);
-
-    if (!(output.fmtContext->oformat->flags & AVFMT_NOFILE))
-    {
-        if (avio_open(&output.fmtContext->pb, fileName, AVIO_FLAG_WRITE) < 0)
-        {
-            std::cout<<"Failed to create output file"<<std::endl;
-            return -4;
-        }
-    }
-
-    if (avformat_write_header(output.fmtContext, NULL) < 0)
-    {
-        std::cout<<"Failed writing header into output file"<<std::endl;
-        return -5;
-    }
-
-    return 0;
-}
-static int openCut(){
-    AVPacket pkt;
-    
-    while (1){
-            AVStream *inStream, *outStream;
-            if (av_read_frame(input.fmtContext, &pkt) == AVERROR_EOF){
-                std::cout <<"End of Frame"<<std::endl;
-                break;
-            }
-
-            if (pkt.stream_index != input.v_index &&
-                pkt.stream_index != input.a_index)
-                {
-                    av_free_packet(&pkt);
-                    continue;
-                }
-        
-            inStream = input.fmtContext->streams[pkt.stream_index];
-            outStream = output.fmtContext->streams[pkt.stream_index];
-
-
-            av_packet_rescale_ts (&pkt, inStream->time_base, outStream->time_base);
-
-            if (av_interleaved_write_frame (output.fmtContext, &pkt) < 0)
-            {
-                std::cout << "Error occurred when writing packet"<<std::endl;
-                break;
-            }
-        }
-        av_write_trailer(output.fmtContext);
-}
-static int openFrame (){
-    AVFrame* frame = av_frame_alloc();
-    if (!frame){
-        std::cout << "Couldnt allocate frame "<<std::endl;
-        return -1;
-    }
-
-    AVPacket* packet = av_packet_alloc();
-    if (!packet){
-        std::cout << "Couldnt allocate packet "<<std::endl;
-        return -2;
-    }
-
-    int response;
-
-    /**
-     * Packetizing
-    */
-    while (av_read_frame(input.fmtContext, packet) >= 0){
-        if (packet->stream_index != input.v_index){
-            continue;
-        }
-        response = avcodec_send_packet (input.codecContext, packet);
-        if (response < 0){
-            std::cout << "Failed to send packet "<<std::endl;
-            return -3;
-        }
-        response = avcodec_receive_frame (input.codecContext, frame);
-        if (response == AVERROR(EAGAIN) || response == AVERROR_EOF){
-            continue;
-        }
-        else if (response <0){
-            std::cout << "Failed to receive packet "<<std::endl;
-        }
-
-        av_packet_unref (packet);
-        int i =0;
-    }
-
-    unsigned char* data = new unsigned char [frame->width * frame->height *3];
-    for (int x = 0; x <frame->width; x++){
-        for (int y=0; y< frame->height; y++){
-            data[ y * frame->width * 3 + x *3    ] = 0xff; //Red
-            data[ y * frame->width * 3 + x *3 + 1] = 0x00; //B
-            data[ y * frame->width * 3 + x *3 + 2] = 0x00; //Green
-        }
-    }
-    
-    av_frame_free(&frame);
-    av_packet_free (&packet);
-}
-
-static int openCodec (){
-    input.codecContext = avcodec_alloc_context3(input.codec);
-    if (!input.codecContext){
-        std::cout << "Cant find codec Context"<<std::endl;
-    }
-
-    if (avcodec_parameters_to_context (input.codecContext, input.codecParams) <0){
-        std::cout <<"Could not open param"<<std::endl;
-    }
-    
-    if (avcodec_open2 (input.codecContext, input.codec, NULL) < 0){
-        std::cout<<"Could not open codec"<<std::endl;
-    }
-}
-
-static int openInput (const char* fileName){
-
-    input.fmtContext = nullptr;
-    input.v_index = input.a_index = -1;
-    
-    av_register_all();
-
-    input.fmtContext = avformat_alloc_context();
-    if (!input.fmtContext){
-        std::cout << "Couldnt create AVFormatContext"<<std::endl;
-        return -1;
-    }
-
-
-
-    if (avformat_open_input(&input.fmtContext, fileName, NULL, NULL) < 0){
-        std::cout << "Could not Open File"<<std::endl;
-        return -1;
-    }
-
-    if (avformat_find_stream_info(input.fmtContext, NULL) < 0)
-    {
-        std::cout << "Failed to retrive input stream info"<<std::endl;
-        return -2;
-    }
-
-    av_dump_format(input.fmtContext, 0, fileName, 0);
-
-    for (unsigned int index=0; index < input.fmtContext->nb_streams; index++)
-    {
-        input.codecContext = input.fmtContext->streams[index]->codec;
-        
-        if (input.codecContext->codec_type == AVMEDIA_TYPE_VIDEO && input.v_index < 0){
-            std::cout << "------ Video info --------"<<std::endl;
-            std::cout << "codec_id : "<<input.codecContext->codec_id<<std::endl;
-            std::cout << "bitrate : "<<input.codecContext->bit_rate<<std::endl;
-            std::cout << "width : "<<input.codecContext->width<<std::endl;
-            input.v_index = index;
-        }
-
-        else if (input.codecContext->codec_type == AVMEDIA_TYPE_AUDIO && input.a_index < 0){
-            std::cout << "------ Audio info --------"<<std::endl;
-            std::cout << "codec_id : "<<input.codecContext->codec_id<<std::endl;
-            std::cout << "bitrate : "<<input.codecContext->bit_rate<<std::endl;
-            std::cout << "sample_rate : "<<input.codecContext->sample_rate<<std::endl;
-            std::cout << "number of channels "<<input.codecContext->channels<<std::endl;
-            input.a_index = index;
-        }
-
-        
-    }
-
-    if ((input.v_index < 0) && (input.a_index <0)){
-        std::cout << "Failed to retrieve input"<<std::endl;
-    }
-
-    
-
-    return 0;
+    printf("%s: pts:%s  dts:%s  duration:%s stream_index:%d\n",
+           tag,
+           std::to_string (pkt->pts).c_str(),
+           std::to_string(pkt->dts).c_str(),
+           std::to_string(pkt->duration).c_str(),
+           pkt->stream_index);
 }
 
 
@@ -343,6 +91,7 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
             pTime[i].minute -= 60;
             pTime[i].hour = +1;
         }
+        pTime[i].source = file;
         pTime[i].name = name[i];
         pTime[i].value = true;
     }
@@ -355,8 +104,6 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     std::string currentTag = optionGroup->fileTag;
     int nbVideos = 0;
 
-    int startSeconds = 3;
-    int endSeconds = 8;
 
     std::vector <std::string> pbfList;
     std::vector <std::string> fileList;
@@ -373,191 +120,214 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     pbfList = pSubJob->pbfList;
     fileList = pSubJob->fileList;
 
-    
 
     
+    AVOutputFormat *outputFormat = NULL;
+    
 
+    int ret = 0;
+
+    int streamMappingSize = 0;
+    int *streamMapping = NULL;
+    int streamIndex = 0;
+
+    STime* pTime = NULL;
+    std::vector <SVideo*> videoList;
     for (int i=0; i<pbfList.size(); i++){
-        STime* pTime= parsePbf(path, pbfList[i]);
+        pTime= parsePbf(path, pbfList[i]);
         int j=0;
         while (pTime[j].value == true){
             j++;
         }
+        nbVideos = j/2;
         if (j%2 != 0){
             std::cout <<"Chapters are not even number"<<std::endl;
-            nbVideos = j/2;
             return -1;
+        }
+
+        for (int k=0; k < nbVideos; k+=2){
+            SVideo* tmpVideo = new SVideo();
+            //tmpVideo->source = pTime[j].source.substr(0, pTime.size()-4);
+            for (int l=0; l<fileList.size()-1; l++){
+                if (fileList[l].substr(0, fileList[l].size() - 3) == pTime[k].source.substr(0, pTime[k].source.size() - 3)){
+                    tmpVideo->source = fileList[l];
+                    break;
+                }
+            }
+            tmpVideo->name = pTime[k].name;
+            tmpVideo->startTime = pTime[k].hour * 3600 + pTime[k].minute * 60 + pTime[k].second;
+            tmpVideo->endTime = pTime[k+1].hour * 3600 +  pTime[k+1].minute * 60 + pTime[k+1].second;
+            videoList.push_back(tmpVideo);
         }
     }
 
-    for (int i=0; i<1; i++){
-        
-        
-        //복잡
-        //openInput ((path+fileList[1]).c_str());
-        int a = 0;
-        openInput ((path+fileList[0]).c_str());
-        createOutput((path+"vjfdfdc.mp4").c_str());
-        //openCodec ();
-        //openFrame();
-        openCut();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // av_seek_frame (input.fmtContext, -1, (startSeconds-1)*AV_TIME_BASE, AVSEEK_FLAG_ANY);
-        
-        // int64_t *dtsStartFrom = (int64_t*) malloc (sizeof(int64_t) * input.fmtContext->nb_streams);
-        // memset (dtsStartFrom, 0 , sizeof(int64_t) * input.fmtContext->nb_streams);
-        // int64_t *ptsStartFrom = (int64_t*) malloc (sizeof(int64_t) * input.fmtContext->nb_streams);
-        // memset (ptsStartFrom, 0 , sizeof(int64_t) * input.fmtContext->nb_streams);
-
-        // AVPacket pkt;
-
-        // while (1){
-        //     AVStream *inStream, *outStream;
-        //     if (av_read_frame(input.fmtContext, &pkt) == AVERROR_EOF){
-        //         std::cout <<"End of Frame"<<std::endl;
-        //         break;
-        //     }
-
-        //     inStream = input.fmtContext->streams[pkt.stream_index];
-        //     outStream = output.fmtContext->streams[pkt.stream_index];
-
-        //     if (av_q2d (inStream->time_base)*pkt.pts > endSeconds){
-        //         av_free_packet(&pkt);
-        //         break;
-        //     }
-
-        //     if (dtsStartFrom[pkt.stream_index] == 0){
-        //         dtsStartFrom[pkt.stream_index] = pkt.dts;
-        //         std::cout <<"DTS"<<std::endl;
-        //         //std::cout << "dts start from "<<av_ts2str(dtsStartFrom[pkt.stream_index])<<std::endl;
-        //     }
-
-
-        //     if (ptsStartFrom[pkt.stream_index] == 0){
-        //         ptsStartFrom[pkt.stream_index] = pkt.dts;
-        //         std::cout <<"PTS"<<std::endl;
-        //         //std::cout << "pts start from "<<av_ts2str(ptsStartFrom[pkt.stream_index])<<std::endl;
-        //     }
-
-        //     /**
-        //      * copy packet
-        //     */
-        //     pkt.pts = av_rescale_q (pkt.pts - ptsStartFrom[pkt.stream_index], inStream->time_base, outStream->time_base);
-        //     pkt.dts = av_rescale_q (pkt.dts - dtsStartFrom[pkt.stream_index], inStream->time_base, outStream->time_base);
-
-        //     if (pkt.pts < 0)
-        //         pkt.pts = 0;
-        //     if (pkt.dts < 0)
-        //         pkt.dts = 0;
-
-        //     pkt.duration = (int) av_rescale_q ((int64_t)pkt.duration, inStream->time_base, outStream->time_base);
-        //     pkt.pos = -1;
-
-            
-        //     std::cout << ""<<std::endl;
-
-        //     if (av_interleaved_write_frame (output.fmtContext, &pkt) < 0)
-        //     {
-        //         std::cout << "Error occurred when writing packet"<<std::endl;
-        //         break;
-
-        //     }
-        //     av_free_packet(&pkt);
-        // }
-
-        // free (dtsStartFrom);
-        // free (ptsStartFrom);
     
-        release();
+    
+    // SVideo* pVideo = NULL;
+    // pVideo = (SVideo *) malloc (sizeof(SVideo) * nbVideos);
+    // for (int i=0; i<nbVideos; i+=2){
+    //     pVideo->source = pTime[i].source;
+    //     pVideo->name = pTime[i].name;
+    //     pVideo->startTime = pTime[i].hour * 3600 + pTime[i].minute * 60 + pTime[i].second;
+    //     pVideo->endTime = pTime[i+1].hour * 3600 +  pTime[i+1].minute * 60 + pTime[i+1].second;
+    // }
+    free(pTime);
+
+    for (int i=0; i<videoList.size() - 1; i++){
+
+        SFile input = {NULL, ""};
+        SFile output = {NULL, ""};
+        input.fileName = path + videoList[i]->source;
+        if ((ret = avformat_open_input(&input.formatContext, input.fileName.c_str(), NULL, NULL)) < 0){
+            std::cout<<"Could not open source file : "<<input.fileName<<std::endl;
+        }
+        output.fileName = path + videoList[i]->name+".mp4";
+        if ((ret = avformat_find_stream_info(input.formatContext, 0)) < 0){
+            std::cout<<"Could not find stream information"<<std::endl;
+        }
+    
+        //dump input information to stderr
+        av_dump_format (input.formatContext, 0, input.fileName.c_str(), 0);
+
+        avformat_alloc_output_context2(&output.formatContext, NULL, NULL, output.fileName.c_str());
+        if (!output.formatContext){
+            std::cout<<"Could not create output context"<<std::endl;
+            ret = AVERROR_UNKNOWN;
+        }
+
+        streamMappingSize = input.formatContext->nb_streams;
+        streamMapping = (int *) av_malloc_array (streamMappingSize, sizeof(*streamMapping));
+        if (!streamMapping){
+            ret = AVERROR (ENOMEM);
+        }
+        int startTime = videoList[i]->startTime;
+        int endTime =videoList[i]->endTime;
+
+        int *startSeconds = (int *) malloc (streamMappingSize * sizeof(int));
+        int *endSeconds = (int *) malloc (streamMappingSize * sizeof(int));
+
+        outputFormat = output.formatContext->oformat;
+
+        // copy streams from the input file to the output file
+        streamIndex = 0;
+        for (int index = 0; index < streamMappingSize; index++){
+            AVStream *outStream;
+            AVStream *inStream = input.formatContext->streams[index];
+            AVCodecParameters *inCodecPar = inStream->codecpar;
+
+            startSeconds[index] = av_rescale_q (startTime * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
+            endSeconds[index] = av_rescale_q (endTime * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
+
+            if (inCodecPar->codec_type != AVMEDIA_TYPE_VIDEO &&
+                inCodecPar->codec_type != AVMEDIA_TYPE_AUDIO &&
+                inCodecPar->codec_type != AVMEDIA_TYPE_SUBTITLE){
+                    streamMapping[index] = -1;
+                    continue;
+                }
+            streamMapping [index] = streamIndex++;
+
+            outStream = avformat_new_stream (output.formatContext, NULL);
+            if (!outStream){
+                std::cout<<"Failed allocating output stream"<<std::endl;
+                ret = AVERROR_UNKNOWN;
+            }
+
+            ret = avcodec_parameters_copy (outStream->codecpar, inCodecPar);
+            if (ret < 0){
+                std::cout << "Failed to copy coec parameter" << std::endl;
+            }
+
+
+            outStream->codecpar->codec_tag = 0;
+        }
+
+        av_dump_format (output.formatContext, 0, output.fileName.c_str(), 1);
+        
+        if (!(outputFormat->flags & AVFMT_NOFILE)){
+            ret = avio_open (&output.formatContext->pb, output.fileName.c_str(), AVIO_FLAG_WRITE);
+            if (ret < 0){
+                std::cout << "Could not open output file"<<std::endl;
+            }
+        }
+
+        ret = avformat_write_header (output.formatContext, NULL);
+        if (ret < 0){
+            std::cout << "Error occujred when opening output file"<<std::endl;
+        }
+
+        ret = avformat_seek_file (input.formatContext, -1, INT64_MIN,startTime*AV_TIME_BASE, startTime*AV_TIME_BASE, 0);
+        if (ret < 0){
+            std::cout<<"Failed to seek the input file"<<std::endl;
+        }
+
+        AVPacket* pkt;
+        pkt = av_packet_alloc ();
+        if (!pkt){
+            std::cout << "Failed to allocate packet"<<std::endl;
+        }
+
+        while (1){
+            AVStream *inStream;
+            AVStream *outStream;
+            AVPacket* pkt;
+            ret = av_read_frame (input.formatContext, pkt);
+            if (ret < 0)
+                break;
+
+            if (pkt->stream_index >= streamMappingSize || streamMapping[pkt->stream_index] < 0 
+                //||
+                ||pkt->pts > endSeconds[pkt->stream_index]
+                ){
+                av_packet_unref (pkt);
+                continue;
+            }
+            inStream = input.formatContext->streams[pkt->stream_index];
+
+            pkt->stream_index = streamMapping[pkt->stream_index];
+            outStream = output.formatContext->streams[pkt->stream_index];
+            logPacket (input.formatContext, pkt, "in");
+
+            //copy packet
+            // pkt->pts = av_rescale_q_rnd (pkt->pts, inStream->time_base, outStream->time_base, static_cast<AVRounding> (AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+            // pkt->dts = av_rescale_q_rnd (pkt->dts, inStream->time_base, outStream->time_base, static_cast<AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
+            // pkt->duration = av_rescale_q (pkt->duration, inStream->time_base, outStream->time_base);
+            // pkt->pos = -1;
+            // logPacket (output.formatContext, &pkt, "out");
+
+            //shift the packet
+            pkt->pts -= startSeconds[pkt->stream_index];
+            pkt->dts -= startSeconds[pkt->stream_index];
+            logPacket (output.formatContext, pkt, "out");
+            av_packet_rescale_ts (pkt, input.formatContext->streams[pkt->stream_index]->time_base, 
+                                    output.formatContext->streams[pkt->stream_index]->time_base);
+            pkt->pos = -1;
+            logPacket (output.formatContext, pkt, "out");
+
+            ret = av_interleaved_write_frame (output.formatContext, pkt);
+            if (ret <0){
+                std::cout<<"Error muxing packet"<<std::endl;
+                break;
+            }
+            av_packet_unref(pkt);
+        }
+        av_write_trailer (output.formatContext);
+
+        //close
+        
+        av_packet_free(&pkt);
+        avformat_close_input (&input.formatContext);
+        if (output.formatContext && !(outputFormat->flags & AVFMT_NOFILE))
+            avio_closep (&output.formatContext->pb);
+        avformat_free_context (output.formatContext);
+
+        av_freep (&streamMapping);
+        free(startSeconds);
+        free(endSeconds);
+        if (ret < 0 && ret!= AVERROR_EOF){
+            std::cout<< "Error occured : "<<std::endl;
+            return -1;
+        }
+        
     }
-    
-
-    
-    // AVOutputFormat* fmt = nullptr;
-    // avformat_alloc_output_context2 (&fmt, NULL, NULL, (path+"fdvcx").c_str());
-
-
-    // for (unsigned int i=0; i<fmt_ctx->nb_streams; i++){
-    //     AVStream* in_stream = fmt_ctx->streams[i];
-    //     AVCodecContext* in_codec_ctx = in_stream->codec;
-
-    //     AVStream* out_stream = avformat_new_stream (fmt, in_codec_ctx->codec);
-        
-    //     AVCodecContext* outCodecContext = out_stream->codec;
-    // }
-
-    // const unsigned char optionSize = 5;
-    // const std::string option[optionSize] = {"-ss", "-to", "-i",  "-c copy", "-y"};
-    // mkdir((path+folderName).c_str(),0777);
-    // for (int i=0; i<pbfList.size(); i++){
-    //     // STime* pTime = parsePbf(path+pbfList[i]);
-    //     STime* pTime= parsePbf(path, pbfList[i]);
-    //     std::cout<<pTime->hour<<"시"<<pTime->minute<<"분"<<pTime->second<<"초"<<std::endl;
-    //     int j =0;
-    //     while (pTime[j].value == true){
-    //         j++;
-    //     }
-    //     if (j%2 != 0){
-    //         std::cout <<"Chapters are not even number"<<std::endl;
-    //         return false;
-    //     }
-    //     else {
-            
-    //         for (int k = 0; k<j; k++){
-    //             command = "/usr/bin/ffmpeg ";
-    //             for (int l=0; l<optionSize; l++){
-    //                 switch (l){
-    //                     case 0: // -ss
-    //                         command += option[l] + " ";
-    //                         command += std::to_string(pTime[k].hour)+":";
-    //                         command += std::to_string(pTime[k].minute)+":";
-    //                         command += std::to_string(pTime[k].second);
-    //                         command += " ";
-    //                         break;
-    //                     case 1: // -to
-    //                         k++;
-    //                         command += option[l] + " ";
-    //                         command += std::to_string(pTime[k].hour)+":";
-    //                         command += std::to_string(pTime[k].minute)+":";
-    //                         command += std::to_string(pTime[k].second);
-    //                         command += " ";
-    //                         break;
-    //                     case 2: // -i
-    //                         command += option[l] + " ";
-    //                         command += "\""+path + fileList[i]+"\"";
-    //                         command += " ";
-    //                         break;
-                        
-    //                     case 3: // -c copy
-    //                         command += option[l] + " ";
-    //                         command += "\""+path + folderName;
-    //                         command += "/"+pTime[k-1].name+".mp4\"";
-    //                         command += " ";
-    //                         break;
-    //                     case 4: // -y
-    //                         command += option[l];
-    //                  }
-    //             }
-    //             system (command.c_str());
-    //             //system (("cd "+path+" && "+command).data());
-    //         }
-    //     }
-        
-        
-    // }
-    return true;
+    return 0;
 }
