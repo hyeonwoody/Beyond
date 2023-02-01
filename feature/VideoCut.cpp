@@ -120,7 +120,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     pbfList = pSubJob->pbfList;
     fileList = pSubJob->fileList;
 
-
+    AVPacket* pkt;
     
     AVOutputFormat *outputFormat = NULL;
     
@@ -145,10 +145,10 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
             return -1;
         }
 
-        for (int k=0; k < nbVideos; k+=2){
+        for (int k=0; k < nbVideos*2; k+=2){
             SVideo* tmpVideo = new SVideo();
             //tmpVideo->source = pTime[j].source.substr(0, pTime.size()-4);
-            for (int l=0; l<fileList.size()-1; l++){
+            for (int l=0; l<fileList.size(); l++){
                 if (fileList[l].substr(0, fileList[l].size() - 3) == pTime[k].source.substr(0, pTime[k].source.size() - 3)){
                     tmpVideo->source = fileList[l];
                     break;
@@ -173,7 +173,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     // }
     free(pTime);
 
-    for (int i=0; i<videoList.size() - 1; i++){
+    for (int i=0; i<videoList.size(); i++){
 
         SFile input = {NULL, ""};
         SFile output = {NULL, ""};
@@ -260,7 +260,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
             std::cout<<"Failed to seek the input file"<<std::endl;
         }
 
-        AVPacket* pkt;
+        
         pkt = av_packet_alloc ();
         if (!pkt){
             std::cout << "Failed to allocate packet"<<std::endl;
@@ -269,7 +269,6 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         while (1){
             AVStream *inStream;
             AVStream *outStream;
-            AVPacket* pkt;
             ret = av_read_frame (input.formatContext, pkt);
             if (ret < 0)
                 break;
