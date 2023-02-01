@@ -100,17 +100,15 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
 int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     std::string path = optionGroup->workPath + "/";
-    std::string folderName = "temporary";
+    std::string folderName = "videoCut";
     std::string currentTag = optionGroup->fileTag;
     int nbVideos = 0;
-
 
     std::vector <std::string> pbfList;
     std::vector <std::string> fileList;
 
     CJob::CSubJob* pSubJob = pJob->pSubJob;
     std::string command = "";
-
 
     if (pJob->pFileName != nullptr){
     }
@@ -161,17 +159,9 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         }
     }
 
-    
-    
-    // SVideo* pVideo = NULL;
-    // pVideo = (SVideo *) malloc (sizeof(SVideo) * nbVideos);
-    // for (int i=0; i<nbVideos; i+=2){
-    //     pVideo->source = pTime[i].source;
-    //     pVideo->name = pTime[i].name;
-    //     pVideo->startTime = pTime[i].hour * 3600 + pTime[i].minute * 60 + pTime[i].second;
-    //     pVideo->endTime = pTime[i+1].hour * 3600 +  pTime[i+1].minute * 60 + pTime[i+1].second;
-    // }
     free(pTime);
+
+    mkdir ((path + folderName).c_str(), 0777);
 
     for (int i=0; i<videoList.size(); i++){
 
@@ -181,7 +171,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         if ((ret = avformat_open_input(&input.formatContext, input.fileName.c_str(), NULL, NULL)) < 0){
             std::cout<<"Could not open source file : "<<input.fileName<<std::endl;
         }
-        output.fileName = path + videoList[i]->name+".mp4";
+        output.fileName = (path + folderName) + "/" + videoList[i]->name+".mp4";
         if ((ret = avformat_find_stream_info(input.formatContext, 0)) < 0){
             std::cout<<"Could not find stream information"<<std::endl;
         }
@@ -265,7 +255,6 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         if (!pkt){
             std::cout << "Failed to allocate packet"<<std::endl;
         }
-
         while (1){
             AVStream *inStream;
             AVStream *outStream;
