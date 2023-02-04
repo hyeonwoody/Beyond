@@ -6,11 +6,6 @@
 #include <string>
 
 
-#ifndef UNIVERSE_H
-#define UNIVERSE_H
-#include "Universe.h"
-#endif
-
 #include "Option.h"
 #include "Job.h"
 

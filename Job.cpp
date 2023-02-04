@@ -3,9 +3,10 @@
 bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     this->pSubJob = new CJob::CSubJob();
     SMapping *currentJob;
+    int* ptrJob = NULL;
     for (int i=0; i<jobList.size(); i++){
         currentJob = jobList[i];
-        bool isFlag = false;
+        bool isOption = false;
 
         this->pTest = new CJob::CTest(); 
         delete this->pTest;
@@ -17,29 +18,27 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                 if (currentJob->description[0] == 'O'){
                     this->pFileName = new CJob::CFileName();
                     this->pFileName->proceed(this, optionGroup, flagGroup);
-                    delete pFileName;
+                    isOption = true;
                 }
                 else {
                     this->pSymbolicLink = new CJob::CSymbolicLink();
                     this->pSymbolicLink->proceed(this, optionGroup, flagGroup);
-                    isFlag = true;
-                    delete pSymbolicLink;
+                    
                 }
                 break;
             case 3: //workpath
                 if (currentJob->description[0] == 'O'){ //OptionGroup
-                    
+                    isOption = true;
                 } 
                 else { //flagGroup
                     this->pVideoCut = new CJob::CVideoCut();
                     this->pVideoCut->proceed(this, optionGroup, flagGroup);
-                    isFlag = true;
-                    delete pVideoCut;
-                    isFlag = true;
+                    
                 }
                 break;
             case 4: //
                 if (currentJob->description[0] == 'O'){ //OptionGroup
+                    isOption = true;
                 } 
                 else {
                     
@@ -49,7 +48,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                 break;
         }
         #if DATABASE 
-        this->pSubJob->updateDB (index, isFlag);
+        this->updateDB (index,isOption);
         #endif
 
         std::cout << "Completed New Job : "<<currentJob->description<<std::endl;

@@ -100,9 +100,9 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
 int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     std::string path = optionGroup->workPath + "/";
-    std::string folderName = "videoCut";
+    std::string folderName = "Clips";
     std::string currentTag = optionGroup->fileTag;
-    int nbVideos = 0;
+    int nbClips = 0;
 
     std::vector <std::string> pbfList;
     std::vector <std::string> fileList;
@@ -130,32 +130,32 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     int streamIndex = 0;
 
     STime* pTime = NULL;
-    std::vector <SVideo*> videoList;
+
     for (int i=0; i<pbfList.size(); i++){
         pTime= parsePbf(path, pbfList[i]);
         int j=0;
         while (pTime[j].value == true){
             j++;
         }
-        nbVideos = j/2;
+        nbClips = j/2;
         if (j%2 != 0){
             std::cout <<"Chapters are not even number"<<std::endl;
             return -1;
         }
 
-        for (int k=0; k < nbVideos*2; k+=2){
-            SVideo* tmpVideo = new SVideo();
+        for (int k=0; k < nbClips*2; k+=2){
+            SClip* tmpClip = new SClip();
             //tmpVideo->source = pTime[j].source.substr(0, pTime.size()-4);
             for (int l=0; l<fileList.size(); l++){
                 if (fileList[l].substr(0, fileList[l].size() - 3) == pTime[k].source.substr(0, pTime[k].source.size() - 3)){
-                    tmpVideo->source = fileList[l];
+                    tmpClip->source = fileList[l];
                     break;
                 }
             }
-            tmpVideo->name = pTime[k].name;
-            tmpVideo->startTime = pTime[k].hour * 3600 + pTime[k].minute * 60 + pTime[k].second;
-            tmpVideo->endTime = pTime[k+1].hour * 3600 +  pTime[k+1].minute * 60 + pTime[k+1].second;
-            videoList.push_back(tmpVideo);
+            tmpClip->name = pTime[k].name;
+            tmpClip->startTime = pTime[k].hour * 3600 + pTime[k].minute * 60 + pTime[k].second;
+            tmpClip->endTime = pTime[k+1].hour * 3600 +  pTime[k+1].minute * 60 + pTime[k+1].second;
+            clipList.push_back(tmpClip);
         }
     }
 
@@ -163,15 +163,15 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
 
     mkdir ((path + folderName).c_str(), 0777);
 
-    for (int i=0; i<videoList.size(); i++){
+    for (int i=0; i<clipList.size(); i++){
 
         SFile input = {NULL, ""};
         SFile output = {NULL, ""};
-        input.fileName = path + videoList[i]->source;
+        input.fileName = path + clipList[i]->source;
         if ((ret = avformat_open_input(&input.formatContext, input.fileName.c_str(), NULL, NULL)) < 0){
             std::cout<<"Could not open source file : "<<input.fileName<<std::endl;
         }
-        output.fileName = (path + folderName) + "/" + videoList[i]->name+".mp4";
+        output.fileName = (path + folderName) + "/" + clipList[i]->name+".mp4";
         if ((ret = avformat_find_stream_info(input.formatContext, 0)) < 0){
             std::cout<<"Could not find stream information"<<std::endl;
         }
@@ -190,8 +190,8 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         if (!streamMapping){
             ret = AVERROR (ENOMEM);
         }
-        int startTime = videoList[i]->startTime;
-        int endTime =videoList[i]->endTime;
+        int startTime = clipList[i]->startTime;
+        int endTime =clipList[i]->endTime;
 
         int *startSeconds = (int *) malloc (streamMappingSize * sizeof(int));
         int *endSeconds = (int *) malloc (streamMappingSize * sizeof(int));
@@ -199,6 +199,9 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         outputFormat = output.formatContext->oformat;
 
         // copy streams from the input file to the output file
+        /**
+         * Segmentation fault on av_packet_rescale_ts if streamIndex is not initialzed
+        */
         streamIndex = 0;
         for (int index = 0; index < streamMappingSize; index++){
             AVStream *outStream;
@@ -317,5 +320,6 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         }
         
     }
+    int a =0;
     return 0;
 }

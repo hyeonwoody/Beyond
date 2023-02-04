@@ -11,7 +11,6 @@ int CMain::ProceedJob() {
     SOptionGroup* pOptionGroup = &option.optionGroup;
     SFlagGroup* pFlagGroup = &option.flagGroup;
     job.proceed(pOptionGroup, pFlagGroup);
-
     return 0;
 }
 

@@ -13,13 +13,15 @@ public:
         std::vector <std::string> captionList;
         std::vector <std::string> symbolicLinkList;
         std::vector <std::string> pbfList;
+
         
         std::string fileName[8]= {"",};
         bool isFolder(unsigned char type);
         bool isFile(unsigned char type);
         bool isSymbolicLink (unsigned char type);
         bool getDirectory(std::string filePath);
-        bool updateDB(unsigned int index, bool isFlag);
+        
+        
     };
 
     class CFileName
@@ -87,7 +89,7 @@ public:
         bool value = false;
     };
 
-    struct SVideo{
+    struct SClip{
         std::string source = "";
         std::string name = "";
         int startTime = 0;
@@ -95,8 +97,10 @@ public:
     };
 
     public :
+        std::vector <SClip*> clipList;
         int proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         CJob::CVideoCut::STime* parsePbf (std::string path, std::string file);
+        
     };
 
     class CTest
@@ -112,6 +116,7 @@ public:
         }
         int a;
     };
+
 public:
     std::vector <SMapping*> jobList;
     CJob(){
@@ -119,13 +124,13 @@ public:
     }
     bool pending (SMapping* job);
     bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    int updateDB (int index, bool isOption);
 
     CSubJob* pSubJob = nullptr;
     CFileName* pFileName = nullptr;
     CSymbolicLink* pSymbolicLink = nullptr;
     CVideoCut* pVideoCut = nullptr;
     CTest* pTest = nullptr; //for Test Purpose
-
     // ~CJob(){
     //     delete pSubJob;
     //     delete pFileName;
