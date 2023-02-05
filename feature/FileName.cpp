@@ -191,10 +191,12 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
                 }
                 else {
                     pbfList[i] = name + "pbf";
+                    pJob->pSubJob->pbfList[i] = name + "pbf";
                     std::cout<<"sucess on renaming pbf"<<std::endl;
                 }
             }
             fileList[i] = name+fileName[7];
+            pJob->pSubJob->fileList[i] = name+fileName[7];
             std::cout<<"success on video"<<std::endl;
             nameIndex = 0;
             tagIndex = 0;
@@ -205,6 +207,7 @@ bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup
             }
             else {
                 captionList[i] = name+"srt";
+                pJob->pSubJob->captionList[i] = name + "srt";
                 std::cout<<"success on caption"<<std::endl;
             }
             caption--;

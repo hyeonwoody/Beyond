@@ -7,7 +7,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     for (int i=0; i<jobList.size(); i++){
         currentJob = jobList[i];
         bool isOption = false;
-
+        
         this->pTest = new CJob::CTest(); 
         delete this->pTest;
 

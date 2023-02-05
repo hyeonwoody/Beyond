@@ -6,6 +6,9 @@
 #include <string>
 #include <cstdlib>
 
+
+#define LOG_VIDEOCUT 0
+
 extern "C" {
 
     #include <libavutil/timestamp.h>
@@ -64,7 +67,7 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
     std::u16string u16((size / 2) + 1, '\0');
     openFile.read((char*)&u16[0], size);
     std::string what = utf16_to_utf8(u16);
-    std::cout<<"이거는 : "<<what<<std::endl;
+
 
     openFile.close();
     what = what.substr(what.find('\n',1));
@@ -276,7 +279,9 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
 
             pkt->stream_index = streamMapping[pkt->stream_index];
             outStream = output.formatContext->streams[pkt->stream_index];
+            #if LOG_VIDEOCUT
             logPacket (input.formatContext, pkt, "in");
+            #endif
 
             //copy packet
             // pkt->pts = av_rescale_q_rnd (pkt->pts, inStream->time_base, outStream->time_base, static_cast<AVRounding> (AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
@@ -288,12 +293,15 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
             //shift the packet
             pkt->pts -= startSeconds[pkt->stream_index];
             pkt->dts -= startSeconds[pkt->stream_index];
+            #if LOG_VIDEOCUT
             logPacket (output.formatContext, pkt, "out");
+            #endif
             av_packet_rescale_ts (pkt, input.formatContext->streams[pkt->stream_index]->time_base, 
                                     output.formatContext->streams[pkt->stream_index]->time_base);
             pkt->pos = -1;
+            #if LOG_VIDEOCUT
             logPacket (output.formatContext, pkt, "out");
-
+            #endif
             ret = av_interleaved_write_frame (output.formatContext, pkt);
             if (ret <0){
                 std::cout<<"Error muxing packet"<<std::endl;
@@ -316,7 +324,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         free(endSeconds);
         if (ret < 0 && ret!= AVERROR_EOF){
             std::cout<< "Error occured : "<<std::endl;
-            return -1;
+            this->setResult(-1);
         }
         
     }

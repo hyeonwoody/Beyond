@@ -33,6 +33,7 @@ public:
         int tagIndex = 0;
         int nameIndex = 0 ;
         int align = 0;
+
     public:
         CFileName (){
             format.insert({"title", 0});
@@ -74,7 +75,10 @@ public:
     class CSymbolicLink
     {
     public :
+        int result = 0;
+    public :
         bool proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+        void setResult (int result) {this->result = result;};
     };
 
     class CVideoCut
@@ -95,10 +99,12 @@ public:
         int startTime = 0;
         int endTime = 0;
     };
-
+    public :
+        int result = 0;
     public :
         std::vector <SClip*> clipList;
         int proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+        int setResult (int result) {this->result = result;};
         CJob::CVideoCut::STime* parsePbf (std::string path, std::string file);
         
     };

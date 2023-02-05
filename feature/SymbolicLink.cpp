@@ -26,6 +26,10 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
     }
     else {
         pSubJob->getDirectory(path);
+
+        /**
+         * NEEDs filename Spliter
+        */
     }
     
     fileList = pSubJob->fileList;
@@ -40,12 +44,14 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
         std::cout<<"왜 두번 "<<path+fileList[i]<<std::endl;
         if (symlink ((path+fileList[i]).c_str(), (currentPath+fileList[i]).c_str()) != 0){
             std::cout<<"error on file symbolic"<<std::endl;
+            this->setResult (-1);
         }
     }
 
     for (int i = 0; i<captionList.size(); i++){
         if (symlink ((path+captionList[i]).c_str(), (currentPath+captionList[i]).c_str()) != 0){
             std::cout<<"error on caption symbolic"<<std::endl;
+            this->setResult (-2);
         }
     }
 
