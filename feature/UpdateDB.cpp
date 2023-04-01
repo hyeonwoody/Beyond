@@ -98,8 +98,8 @@ int CJob::updateDB (int index, bool isOption){
     sql::Driver* driver = sql::mariadb::get_driver_instance();
 
     // Configure Connection
-    sql::SQLString url("jdbc:mariadb://200.40.8.10:3306/BEYOND");
-    sql::Properties properties({{"user", "map"}, {"password", "maroON$5^"}});
+    sql::SQLString url("jdbc:mariadb://안알랴줌/BEYOND");
+    sql::Properties properties({{"user", "db"}, {"password", "이거도안알랴줌"}});
     std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
     // Establish Connection
     
