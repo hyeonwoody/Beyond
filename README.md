@@ -5,9 +5,9 @@ A CLI-based program to enhance video editing convenience.
 
 ## 🧑‍💻: Intro
  I develop it for my own good.
- > Options :
-> -w Set current path.
-> -c Set destination path. 
+  Options :
+    -w Set current path.
+    -c Set destination path. 
 > -f File name alignment.
 > -s Select the file (Not Implemented).
 
