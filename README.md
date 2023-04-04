@@ -4,7 +4,7 @@ A CLI-based program to enhance video editing convenience.
 </br>
 
 ## 🧑‍💻: Intro
- I develop it for my own good.
+ I develop it for my own good.  
   Options :  
     -w Set current path.  
     -c Set destination path.  
