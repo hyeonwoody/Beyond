@@ -5,17 +5,17 @@ A CLI-based program to enhance video editing convenience.
 
 ## 🧑‍💻: Intro
  I develop it for my own good.
- Options :
--w Set current path.
--c Set destination path. 
--f File name alignment.
--s Select the file (Not Implemented).
+ > Options :
+> -w Set current path.
+> -c Set destination path. 
+> -f File name alignment.
+> -s Select the file (Not Implemented).
 
-Flag :
--cp Copy the file to destination path(-c).
--sb Sync the subtitle file name with the video file name.
--sy Create Symbolic link to destination path(-c).
--ca Cut the video on certain duration.
+> Flag :
+> -cp Copy the file to destination path(-c).
+> -sb Sync the subtitle file name with the video file name.
+> -sy Create Symbolic link to destination path(-c).
+> -ca Cut the video on certain duration.
  </br>
 
 ## 📞: Contact
