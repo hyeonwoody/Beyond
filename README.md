@@ -29,5 +29,5 @@ A CLI-based program to enhance video editing convenience.
 >C++
 
 ## 📖: Libraries Used
->FFmpeg 4.2 (AVStream, AVPacket)
+>FFmpeg 4.2 (AVStream, AVPacket)  
 >MariaDB
