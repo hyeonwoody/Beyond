@@ -15,15 +15,12 @@ A CLI-based program to enhance video editing convenience.
 </br>
 
  ## ✅: Implementation 
-- **파일 복사** : 원본 복사뿐만 아니라 심볼릭링크 생성을 통해 하드 드라이브 절약.
+- **File copying**: Saving hard drive space by creating symbolic links in addition to copying the original file.  
+- **Video cutting**: Cutting specific sections using the bookmark file of the player.  
+- **Strategy pattern**: Adding a proceed() method to the CJob class to change the processing method at runtime.  
+- **Command pattern**: Encapsulating the processing method in the CJob class to improve code readability.  
+- **Factory method pattern**: Using the CreateOption() and CreateFlag() methods to create objects for optionList and flagList.  
 
-- **영상 자르기** : 플레이어의 책갈피 파일을 활용한 특정 구간 자르기.  
-
-- **전략 패턴** : 런타임에 작업 처리 방법을 변경할 수 있도록 CJob 클래스에 proceed() 메서드 추가.
-
-- **명령 패턴** : 코드의 가독성을 높이기 위해 CJob 클래스에서 작업을 처리하는 메서드 캡슐화.
-
-- **팩토리 메서드 패턴** :  optionList와 flagList에 대한 객체 생성을 위해 CreateOption()과 CreateFlag() 메서드 사용.  
 
   Options :  
     -w Set current path.  
