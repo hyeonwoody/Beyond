@@ -36,12 +36,11 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
     captionList = pSubJob->captionList;
     symbolicList = pSubJob->symbolicLinkList;    
     
-    mkdir(("/zzz/workstation/Movie/Others/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]).c_str(), 0777);
-    currentPath = "/zzz/workstation/Movie/Others/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]+"/";
+    mkdir(("/zzz/workstation/big/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]).c_str(), 0777);
+    currentPath = "/zzz/workstation/big/"+pSubJob->fileName[2]+"_"+pSubJob->fileName[0]+"/";
 
 
     for (int i = 0; i<fileList.size(); i++){
-        std::cout<<"왜 두번 "<<path+fileList[i]<<std::endl;
         if (symlink ((path+fileList[i]).c_str(), (currentPath+fileList[i]).c_str()) != 0){
             std::cout<<"error on file symbolic"<<std::endl;
             this->setResult (-1);

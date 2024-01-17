@@ -13,7 +13,7 @@
 #define OPTION_NUM 8
 #define FLAG_NUM 8
 
-#define DATABASE 1
+#define DATABASE 0
 
 #define WINDOWS 0
 

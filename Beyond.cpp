@@ -112,7 +112,7 @@ int GetParam(COption* option){
 }
 
 void Usage(){
-    printf ("ff");
+    printf ("Usage : Beyond -[Option Parameter] -[Flag Parameter]");
 }
 
 int main(int argc, char* argv[]) {
