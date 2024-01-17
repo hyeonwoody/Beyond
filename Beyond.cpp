@@ -50,7 +50,9 @@ int CMain::ParseParam() {
     }    
     
     free(this->option.optionList);
+    this->option.optionList = nullptr;
     free(this->option.flagList);
+    this->option.flagList = nullptr;
     return 0;
 }
 

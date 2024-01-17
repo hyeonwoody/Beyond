@@ -25,6 +25,14 @@ struct SMapping{
 
 class COption
 {
+private:
+    void Cleanup(){
+        if (optionList)
+            free(optionList);
+        if (flagList)
+            free(flagList);
+    }
+
 public:
 public:
     int m_argc;
@@ -63,6 +71,7 @@ public:
 
     }
     ~COption(){
+        Cleanup();
     }
 
     bool add_option_insert (SMapping* currentMapping);
