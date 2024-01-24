@@ -14,6 +14,30 @@ A CLI-based program to enhance video editing convenience.
  
 </br>
 
+ ## 🚀: Build & Run
+ 1. Create a Build Directory:
+ ```bash
+ mkdir build
+ cd build
+ ```
+ 
+ 2. Generate Build Files with CMake:
+ ```bash
+ cmake ..
+ ```
+
+3. Build the Project:
+```bash
+make
+```
+
+
+4. Run the Excutable:
+```bash
+./Beyond
+```
+
+
  ## ✅: Implementation 
 - **File copying**: Saving hard drive space by creating symbolic links in addition to copying the original file.  
 - **Video cutting**: Cutting specific sections using the bookmark file of the player.  
