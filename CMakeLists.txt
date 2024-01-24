@@ -28,17 +28,14 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 
-# find_path(AVCODEC_INCLUDE_DIR /usr/include/x86_64-linux-gnu/libavcodec/avcodec.h)
-# find_library(AVCODEC_LIBRARY avcodec)
 
-# find_path(AVFORMAT_INCLUDE_DIR /usr/include/x86_64-linux-gnu/libavformat/avformat.h)
-# find_library(AVFORMAT_LIBRARY avformat)
+include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg/include)
 
-# find_path(AVUTIL_INCLUDE_DIR /usr/include/x86_64-linux-gnu/libavutil/avutil.h)
-# find_library(AVUTIL_LIBRARY avutil)
+find_library(AVCODEC_LIBRARY avcodec)
+find_library(AVFORMAT_LIBRARY avformat)
+find_library(AVUTIL_LIBRARY avutil)
 
-
-target_link_libraries(${PROJECT_NAME} avformat avcodec avutil mariadbcpp)
+target_link_libraries(${PROJECT_NAME} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} mariadbcpp pthread z swresample)
 
 
 

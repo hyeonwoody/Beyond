@@ -133,7 +133,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     int streamIndex = 0;
 
     STime* pTime = NULL;
-
+    std::cout<<av_version_info()<<std::endl;
     for (int i=0; i<pbfList.size(); i++){
         pTime= parsePbf(path, pbfList[i]);
         int j=0;
@@ -173,7 +173,6 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         input.fileName = path + clipList[i]->source;
         if ((ret = avformat_open_input(&input.formatContext, input.fileName.c_str(), NULL, NULL)) < 0){
             std::cout<<"Could not open source file : "<<input.fileName<<std::endl;
-            continue;
         }
         output.fileName = (path + folderName) + "/" + clipList[i]->name+".mp4";
         if ((ret = avformat_find_stream_info(input.formatContext, 0)) < 0){
