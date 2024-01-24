@@ -31,9 +31,9 @@ include(CPack)
 
 include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg/include)
 
-find_library(AVCODEC_LIBRARY avcodec)
-find_library(AVFORMAT_LIBRARY avformat)
-find_library(AVUTIL_LIBRARY avutil)
+find_library(AVCODEC_LIBRARY avcodec PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavcodec)
+find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libaformat)
+find_library(AVUTIL_LIBRARY avutil PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavutil)
 
 target_link_libraries(${PROJECT_NAME} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} mariadbcpp pthread z swresample)
 
