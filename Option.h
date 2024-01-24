@@ -1,3 +1,6 @@
+#pragma once
+#include <string>
+#include <cstring>
 struct SOptionGroup{
     std::string workPath;
     std::string currentPath;

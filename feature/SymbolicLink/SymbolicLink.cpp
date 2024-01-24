@@ -1,14 +1,16 @@
-#include "../Beyond.h"
+
+#include "SymbolicLink.h"
 #include <fcntl.h> //open
 #include <unistd.h> //read, write, close
 #include <cstdio> //BUFSIZ
+#include <iostream>
 
 #include <sys/sendfile.h> //sendfile
 #include <sys/stat.h> //fstat
 #include <sys/stat.h> //mkdir
 #include <sys/types.h> //fstat
 
-bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+int CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     std::string path = optionGroup->workPath + "/";
     std::string currentPath="";
@@ -19,18 +21,12 @@ bool CJob::CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagG
     std::vector <std::string> symbolicList;
 
     CJob::CSubJob* pSubJob = pJob->pSubJob;
-    
-    if (pJob->pFileName != nullptr){
-        fileList = pSubJob->fileList;
-        captionList = pSubJob->captionList;
-    }
-    else {
-        pSubJob->getDirectory(path);
+    pSubJob->getDirectory(path);
 
         /**
          * NEEDs filename Spliter
         */
-    }
+
     
     fileList = pSubJob->fileList;
     captionList = pSubJob->captionList;

@@ -1,10 +1,27 @@
-#include <map>
+#pragma once
+#include "Option.h"
 #include <vector>
 #include <string>
 
 class CJob
 {
 public:
+
+    struct STime{
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+        std::string source = "";
+        std::string name = "";
+        bool value = false;
+    };
+
+    struct SClip{
+        std::string source = "";
+        std::string name = "";
+        int startTime = 0;
+        int endTime = 0;
+    };
 
     class CSubJob
     {
@@ -24,90 +41,13 @@ public:
         
     };
 
-    class CFileName
-    {
-    public:
-        std::map <std::string, int> format;
-        std::string path;
+    CJob(){
+        pTest =nullptr;
 
-        int tagIndex = 0;
-        int nameIndex = 0 ;
-        int align = 0;
+    }
+    virtual ~CJob(); 
 
-    public:
-        CFileName (){
-            format.insert({"title", 0});
-
-            format.insert({"episode", 1});
-            format.insert({"E00", 1});
-            format.insert({"E000", 1});
-            format.insert({"S00E00", 1});
-            format.insert({"S00E000", 1});
-
-            format.insert({"date", 2});
-            
-            format.insert({"subtitle", 3});
-            
-            format.insert({"resolution", 4});
-            
-            format.insert({"reel", 5});
-            format.insert({"reels", 5});
-            
-            format.insert({"codec", 6});
-            
-            format.insert({"extension", 7});
-        }
-
-        bool proceed(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-        
-        void setPath(std::string currentPath) {path = currentPath;};
-        std::string getPath(){return path;};
-
-        std::string formatParse(int order, std::vector <std::string> fileTag, std::vector <std::string> fileName);
-        std::string episodeParse(std::string tag, std::vector <std::string> fileName);
-        std::string dateParse(std::vector <std::string> fileName);
-        std::string resolutionParse(int length, std::vector <std::string> fileName);
-        std::string reelsParse(std::vector <std::string> fileName);
-        std::string codecParse(std::vector <std::string> fileName);
-        std::string extensionParse(std::vector <std::string> fileName);
-    };
-
-    class CSymbolicLink
-    {
-    public :
-        int result = 0;
-    public :
-        bool proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-        void setResult (int result) {this->result = result;};
-    };
-
-    class CVideoCut
-    {
-    public :
-    struct STime{
-        int hour = 0;
-        int minute = 0;
-        int second = 0;
-        std::string source = "";
-        std::string name = "";
-        bool value = false;
-    };
-
-    struct SClip{
-        std::string source = "";
-        std::string name = "";
-        int startTime = 0;
-        int endTime = 0;
-    };
-    public :
-        int result = 0;
-    public :
-        std::vector <SClip*> clipList;
-        int proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-        int setResult (int result) {this->result = result;};
-        CJob::CVideoCut::STime* parsePbf (std::string path, std::string file);
-        
-    };
+    
 
     class CTest
     {
@@ -125,18 +65,12 @@ public:
 
 public:
     std::vector <SMapping*> jobList;
-    CJob(){
-        
-    }
     bool pending (SMapping* job);
-    bool proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-    int updateDB (int index, bool isOption);
+    bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
+    virtual int proceed(CJob* job, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
-    CSubJob* pSubJob = nullptr;
-    CFileName* pFileName = nullptr;
-    CSymbolicLink* pSymbolicLink = nullptr;
-    CVideoCut* pVideoCut = nullptr;
-    CTest* pTest = nullptr; //for Test Purpose
+    CJob::CSubJob* pSubJob;
+    CTest* pTest; //for Test Purpose
     // ~CJob(){
     //     delete pSubJob;
     //     delete pFileName;

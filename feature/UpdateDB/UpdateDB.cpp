@@ -1,12 +1,13 @@
-#include "../Beyond.h"
+#include "UpdateDB.h"
 #include <mariadb/conncpp.hpp>
+#include <vector>
 
 
 
 
 static bool initDB = false;
 
-void UpdateSymbolicLink (std::unique_ptr<sql::Connection> &conn, CJob::CSubJob *pSubJob){
+void CUpdateDB::SymbolicLink (std::unique_ptr<sql::Connection> &conn, CJob::CSubJob *pSubJob){
     try {
         // Create a new PreparedStatement
         std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("INSERT INTO symbolicLink (title, year) values (?, ?)"));
@@ -46,7 +47,7 @@ void showSymbolicLink (std::unique_ptr<sql::Connection> &conn){
    }
 }
 
-void UpdateVideoCut (std::unique_ptr<sql::Connection> &conn, std::vector<CJob::CVideoCut::SClip *> clipList){
+void CUpdateDB::VideoCut (std::unique_ptr<sql::Connection> &conn, std::vector<CJob::SClip *> clipList){
     try {
         // Create a new PreparedStatement
         std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("INSERT INTO clips (title, srcTitle, startTime, endTime) values (?, ?, ?, ?)"));
@@ -93,7 +94,7 @@ void showVideoCut (std::unique_ptr<sql::Connection> &conn){
 }
 
 
-int CJob::updateDB (int index, bool isOption){
+int CUpdateDB::Update (int index, bool isOption){
     
     sql::Driver* driver = sql::mariadb::get_driver_instance();
 
@@ -111,9 +112,9 @@ int CJob::updateDB (int index, bool isOption){
 
                 }
                 else {
-                    if (this->pSymbolicLink->result == 0){
+                    if (1){
                         showSymbolicLink (conn);
-                        UpdateSymbolicLink (conn, this->pSubJob);
+                        //this->SymbolicLink (conn, this->pSubJob);
                         showSymbolicLink(conn);
                     }  
                 }
@@ -123,9 +124,9 @@ int CJob::updateDB (int index, bool isOption){
                     
                 } 
                 else { //flagGroup
-                    if (this->pVideoCut->result == 0){
+                    if (1){
                         showVideoCut (conn);
-                        UpdateVideoCut (conn, this->pVideoCut->clipList);
+                        //this->VideoCut (conn, this->pVideoCut->clipList);
                         showVideoCut(conn);
                     }  
                 }

@@ -144,6 +144,7 @@ int main(int argc, char* argv[]) {
 
 
         app.Main();
+        delete (option);
         return 0;
     }
 }

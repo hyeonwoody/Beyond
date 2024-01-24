@@ -1,22 +1,21 @@
 
 #include <dirent.h>
 
-#include "../Beyond.h"
-#include "../Parse.h"
+#include "FileName.h"
 
-std::string CJob::CJob::CFileName::extensionParse (std::vector <std::string> fileName){
+std::string CFileName::extensionParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
 
-std::string CJob::CFileName::codecParse (std::vector <std::string> fileName){
+std::string CFileName::codecParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 } 
 
-std::string CJob::CFileName::reelsParse (std::vector <std::string> fileName){
+std::string CFileName::reelsParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
 
-std::string CJob::CFileName::resolutionParse(int length, std::vector <std::string> fileName){
+std::string CFileName::resolutionParse(int length, std::vector <std::string> fileName){
     std::string name = "";
     for (int i = nameIndex - 1; i < nameIndex + length; i++){
         name = fileName[nameIndex] + ".";
@@ -25,10 +24,10 @@ std::string CJob::CFileName::resolutionParse(int length, std::vector <std::strin
     return name;
 }
 
-std::string CJob::CFileName::dateParse(std::vector <std::string> fileName){
+std::string CFileName::dateParse(std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
-std::string CJob::CFileName::episodeParse(std::string tag, std::vector <std::string> fileName){
+std::string CFileName::episodeParse(std::string tag, std::vector <std::string> fileName){
     enum {
         E00,
         E000,
@@ -71,7 +70,7 @@ std::string CJob::CFileName::episodeParse(std::string tag, std::vector <std::str
 //         return title;
 // }
 
-std::string CJob::CFileName::formatParse(int order,std::vector <std::string> fileTag, std::vector <std::string> fileName){
+std::string CFileName::formatParse(int order,std::vector <std::string> fileTag, std::vector <std::string> fileName){
     std::string name = "";
     int size = fileName.size();
     int length = 0;
@@ -124,7 +123,7 @@ std::string CJob::CFileName::formatParse(int order,std::vector <std::string> fil
     return name;
 }
 
-bool CJob::CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+int CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     const std::string path = optionGroup->workPath + "/";
     std::string folderName;
     std::string currentTag = optionGroup->fileTag;

@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include "../Beyond.h"
 #include "../Parse.h"
+#include <map>
 
 
 
@@ -40,12 +41,19 @@ bool CJob::CSubJob::getDirectory (std::string path){
     /**
      * Initialization (captionList.shrink_to_fit())
     */
-    captionList.clear();
-    std::vector<std::string>().swap(captionList);
-    fileList.clear();
-    std::vector<std::string>().swap(fileList);
-    pbfList.clear();
-    std::vector<std::string>().swap(pbfList);
+    if (this->captionList.size() > 0){
+        captionList.clear();
+        std::vector<std::string>().swap(captionList);
+    }
+    if (this->fileList.size() > 0){
+        fileList.clear();
+        std::vector<std::string>().swap(fileList);
+    }
+    if (this->pbfList.size() > 0){
+        pbfList.clear();
+        std::vector<std::string>().swap(pbfList);
+
+    }
 
     std::cout<<std::endl<<"File List :"<<std::endl;
     while (dirp){

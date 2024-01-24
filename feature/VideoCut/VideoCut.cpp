@@ -1,4 +1,6 @@
 
+#include "VideoCut.h"
+
 #include <iostream>
 #include <fstream>
 #include <codecvt>
@@ -17,8 +19,6 @@ extern "C" {
 
 #include <sys/stat.h> // mkdir
 
-#include "../Beyond.h"
-#include "../Parse.h"
 
 struct SFile {
     AVFormatContext *formatContext;
@@ -46,7 +46,7 @@ std::string utf16_to_utf8(std::u16string const& str){
     return utf8;
 }
 
-CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string file){
+CVideoCut::STime* CVideoCut::parsePbf(std::string path, std::string file){
 
     std::ifstream openFile(path+file);
     int numLine = 0;
@@ -55,7 +55,7 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
     std::string line;
     std::string tmp;
 
-    CJob::CVideoCut::STime* pTime;
+    CVideoCut::STime* pTime;
 
     openFile.seekg(0, std::ios::end);
     size_t size = (size_t) openFile.tellg();
@@ -85,8 +85,8 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
         
         numLine++;
     }
-    pTime = (CJob::CVideoCut::STime*)malloc(sizeof(CJob::CVideoCut::STime)*numLine);
-    memset(pTime, 0, sizeof(CJob::CVideoCut::STime)*numLine);
+    pTime = (CVideoCut::STime*)malloc(sizeof(CVideoCut::STime)*numLine);
+    memset(pTime, 0, sizeof(CVideoCut::STime)*numLine);
     for (int i=0; i<numLine; i++){
         pTime[i].second = (stoi(number[i]) / 1000) % 60;
         pTime[i].minute = (stoi(number[i]) / 1000) / 60;
@@ -100,7 +100,9 @@ CJob::CVideoCut::STime* CJob::CVideoCut::parsePbf(std::string path, std::string 
     }
     return pTime;
 }
-int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
+
+
+int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
     std::string path = optionGroup->workPath + "/";
     std::string folderName = "Clips";
@@ -113,11 +115,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     CJob::CSubJob* pSubJob = pJob->pSubJob;
     std::string command = "";
 
-    if (pJob->pFileName != nullptr){
-    }
-    else {
-        pSubJob->getDirectory(path);
-    }
+    pSubJob->getDirectory(path);
     pbfList = pSubJob->pbfList;
     fileList = pSubJob->fileList;
 
@@ -132,7 +130,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
     int *streamMapping = NULL;
     int streamIndex = 0;
 
-    STime* pTime = NULL;
+    CVideoCut::STime* pTime = NULL;
     std::cout<<av_version_info()<<std::endl;
     for (int i=0; i<pbfList.size(); i++){
         pTime= parsePbf(path, pbfList[i]);
@@ -147,7 +145,7 @@ int CJob::CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup*
         }
 
         for (int k=0; k < nbClips*2; k+=2){
-            SClip* tmpClip = new SClip();
+            CVideoCut::SClip* tmpClip = new SClip();
             //tmpVideo->source = pTime[j].source.substr(0, pTime.size()-4);
             for (int l=0; l<fileList.size(); l++){
                 if (fileList[l].substr(0, fileList[l].size() - 3) == pTime[k].source.substr(0, pTime[k].source.size() - 3)){

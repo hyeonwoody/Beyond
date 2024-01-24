@@ -9,7 +9,7 @@ enable_testing()
 # link_directories(${FFMPEG_LIB_DIR})
 
 
-set (FEATURES feature/UpdateDB.cpp feature/SubJob.cpp feature/FileName.cpp feature/SymbolicLink.cpp feature/VideoCut.cpp)
+set (FEATURES feature/VideoCut/VideoCut.cpp feature/UpdateDB/UpdateDB.cpp feature/SubJob.cpp feature/FileName/FileName.cpp feature/SymbolicLink/SymbolicLink.cpp )
 
 add_executable(${PROJECT_NAME}
     Job.h
@@ -32,7 +32,7 @@ include(CPack)
 include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg/include)
 
 find_library(AVCODEC_LIBRARY avcodec PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavcodec)
-find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libaformat)
+#find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libaformat)
 find_library(AVUTIL_LIBRARY avutil PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavutil)
 
 target_link_libraries(${PROJECT_NAME} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} mariadbcpp pthread z swresample)
