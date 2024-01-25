@@ -4,7 +4,13 @@
 #include "../Parse.h"
 #include <map>
 
-
+    
+    void CJob::CSubJob::setDone(bool value){
+        this->done = value;
+    }
+    bool CJob::CSubJob::isDone(){
+        return this->done;
+    }
 
 
     bool CJob::CSubJob::isFolder (unsigned char type){
@@ -37,7 +43,7 @@ bool CJob::CSubJob::getDirectory (std::string path){
     extension.insert({"mkv", 3});
     extension.insert({"MKV", 3});
     extension.insert({"pbf", 4});
-
+    
     /**
      * Initialization (captionList.shrink_to_fit())
     */
@@ -88,7 +94,7 @@ bool CJob::CSubJob::getDirectory (std::string path){
     std::cout<<"End of The File"<<std::endl<<std::endl;
     closedir(dirp);
 
-    
+    this->setDone(true);
 
     return true;
 }

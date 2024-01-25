@@ -5,7 +5,21 @@
 #include "./feature/VideoCut/VideoCut.h"
 #include "./feature/UpdateDB/UpdateDB.h"
 
+CJob:: CJob(){
+    pTest =nullptr;
+    pSubJob = new CSubJob();
+}
+
 CJob::~CJob(){
+    if (pTest){
+        delete (pTest);
+        pTest = nullptr;
+    }
+    if (pSubJob){
+        delete (pSubJob);
+        pSubJob = nullptr;
+    }
+
 }
 
 bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
@@ -20,15 +34,15 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
 
         std::cout << "On Process New Job : "<<currentJob->description<<std::endl;
         unsigned int index = currentJob->index;
-        CJob* tmp = nullptr;
+        CJob* pJob = nullptr;
         switch (index){
             case 2:
                 if (currentJob->description[0] == 'O'){
-                    tmp = new CFileName();
+                    pJob = new CFileName();
                     isOption = true;
                 }
                 else {
-                    tmp = new CSymbolicLink();
+                    pJob = new CSymbolicLink();
                 }
                 break;
             case 3: //workpath
@@ -36,7 +50,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                     isOption = true;
                 } 
                 else { //flagGroup
-                    tmp = new CVideoCut();
+                    pJob = new CVideoCut();
                 }
                 break;
             case 4: //
@@ -53,9 +67,9 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         #if DATABASE 
         update
         #endif
-        if (tmp){
-            tmp->proceed(this, optionGroup, flagGroup);
-            delete (this->pSubJob);
+        if (pJob){
+            pJob->proceed(this, optionGroup, flagGroup);
+            delete (pJob);
         }
         
         std::cout << "Completed New Job : "<<currentJob->description<<std::endl;
@@ -64,9 +78,7 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
 }
 
 int CJob::proceed(CJob* job, SOptionGroup* optionGroup, SFlagGroup* flagGroup) {
-    // Implementation of the proceed function
-    // ...
-    return 0;  // Replace this with the actual implementation
+    return 0;
 }
 
 bool CJob::pending(SMapping* job){

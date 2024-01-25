@@ -136,11 +136,12 @@ int CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
     std::vector <std::string> pbfList;
 
     std::string fileName[8]= {"",};
-        pJob->pSubJob->getDirectory(path);
+    CJob::CSubJob* pSubJob = pJob->pSubJob; 
+    pSubJob->getDirectory(path);
 
-    fileList = pJob->pSubJob->fileList;
-    captionList = pJob->pSubJob->captionList;
-    pbfList = pJob->pSubJob->pbfList;
+    fileList = pSubJob->fileList;
+    captionList = pSubJob->captionList;
+    pbfList = pSubJob->pbfList;
 
     unsigned int caption = pJob->pSubJob->captionList.size();
 

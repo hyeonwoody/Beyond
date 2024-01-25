@@ -8,9 +8,7 @@
  * Proceed the jobs that is on pipe.
 */
 int CMain::ProceedJob() {
-    SOptionGroup* pOptionGroup = &option.optionGroup;
-    SFlagGroup* pFlagGroup = &option.flagGroup;
-    job.proceed(pOptionGroup, pFlagGroup);
+    job.proceed(&option.optionGroup, &option.flagGroup);
     return 0;
 }
 
@@ -71,9 +69,6 @@ int CMain::Main(){
     if (ret = SortJob() <0){
         return 4;
     }
-    /**
-     * Add Sort Job pending
-    */
     
     if (ret = ProceedJob() < 0){
         return 5;
@@ -144,7 +139,6 @@ int main(int argc, char* argv[]) {
 
 
         app.Main();
-        delete (option);
         return 0;
     }
 }

@@ -25,26 +25,26 @@ public:
 
     class CSubJob
     {
+    private:
+        bool done;
     public:
         std::vector <std::string> fileList; 
         std::vector <std::string> captionList;
         std::vector <std::string> symbolicLinkList;
         std::vector <std::string> pbfList;
-
+        
         
         std::string fileName[8]= {"",};
         bool isFolder(unsigned char type);
         bool isFile(unsigned char type);
         bool isSymbolicLink (unsigned char type);
         bool getDirectory(std::string filePath);
-        
+        void setDone(bool value);
+        bool isDone();
         
     };
 
-    CJob(){
-        pTest =nullptr;
-
-    }
+    CJob();
     virtual ~CJob(); 
 
     
@@ -69,7 +69,7 @@ public:
     bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
     virtual int proceed(CJob* job, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
-    CJob::CSubJob* pSubJob;
+    CSubJob* pSubJob;
     CTest* pTest; //for Test Purpose
     // ~CJob(){
     //     delete pSubJob;

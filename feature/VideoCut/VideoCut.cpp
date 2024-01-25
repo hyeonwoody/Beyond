@@ -114,8 +114,9 @@ int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
 
     CJob::CSubJob* pSubJob = pJob->pSubJob;
     std::string command = "";
-
-    pSubJob->getDirectory(path);
+    if (!pSubJob->isDone())
+        pSubJob->getDirectory(path);
+        
     pbfList = pSubJob->pbfList;
     fileList = pSubJob->fileList;
 

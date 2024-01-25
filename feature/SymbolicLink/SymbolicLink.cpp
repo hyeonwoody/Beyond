@@ -4,6 +4,7 @@
 #include <unistd.h> //read, write, close
 #include <cstdio> //BUFSIZ
 #include <iostream>
+#include <filesystem> //createDirectories
 
 #include <sys/sendfile.h> //sendfile
 #include <sys/stat.h> //fstat
@@ -21,12 +22,13 @@ int CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* f
     std::vector <std::string> symbolicList;
 
     CJob::CSubJob* pSubJob = pJob->pSubJob;
-    pSubJob->getDirectory(path);
+    if (!pSubJob->isDone()){
+        pSubJob->getDirectory(path);
+    }
 
         /**
          * NEEDs filename Spliter
         */
-
     
     fileList = pSubJob->fileList;
     captionList = pSubJob->captionList;
@@ -37,10 +39,20 @@ int CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* f
 
 
     for (int i = 0; i<fileList.size(); i++){
-        if (symlink ((path+fileList[i]).c_str(), (currentPath+fileList[i]).c_str()) != 0){
+        std::string sourcePath = path+fileList[i];
+        std::string destPath = currentPath + fileList[i];
+
+        std::cout <<"SOURCE : "<<sourcePath <<std::endl;
+        std::cout <<"DESTINATION : "<<destPath <<std::endl;
+
+        if (symlink (sourcePath.c_str(), destPath.c_str()) != 0){
             std::cout<<"error on file symbolic"<<std::endl;
             this->setResult (-1);
         }
+        // if (symlink ((path+fileList[i]).c_str(), (currentPath+fileList[i]).c_str()) != 0){
+        //     std::cout<<"error on file symbolic"<<std::endl;
+        //     this->setResult (-1);
+        // }
     }
 
     for (int i = 0; i<captionList.size(); i++){
