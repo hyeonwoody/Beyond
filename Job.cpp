@@ -5,16 +5,14 @@
 #include "./feature/VideoCut/VideoCut.h"
 #include "./feature/UpdateDB/UpdateDB.h"
 
+#define TEST 0
+
 CJob:: CJob(){
     pTest =nullptr;
     pSubJob = new CSubJob();
 }
 
 CJob::~CJob(){
-    if (pTest){
-        delete (pTest);
-        pTest = nullptr;
-    }
     if (pSubJob){
         delete (pSubJob);
         pSubJob = nullptr;
@@ -29,8 +27,11 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         currentJob = jobList[i];
         bool isOption = false;
         
+        #if TEST 
         this->pTest = new CJob::CTest(); 
         delete this->pTest;
+        this->pTest = nullptr;
+        #endif
 
         std::cout << "On Process New Job : "<<currentJob->description<<std::endl;
         unsigned int index = currentJob->index;
