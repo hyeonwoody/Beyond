@@ -196,7 +196,7 @@ int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
         int64_t *startSeconds = (int64_t *) malloc (streamMappingSize * sizeof(int));
         int64_t *endSeconds = (int64_t *) malloc (streamMappingSize * sizeof(int));
 
-        outputFormat = output.formatContext->oformat;
+        const AVOutputFormat* outputFormat = output.formatContext->oformat;
 
         // copy streams from the input file to the output file
         /**
