@@ -1,6 +1,40 @@
 #include "Beyond.h"
 #include "Parse.h"
 
+COption::COption (){
+    m_argc = 0;
+    m_argv = nullptr;
+
+    optionListIndex = 0;
+    optionIndex = 0;
+    
+    flagListIndex = 0;
+    flagIndex = 0;
+
+
+    memset (&optionGroup, 0, sizeof(SOptionGroup));
+    optionGroup.workPath = "W:";
+    optionGroup.currentPath = "/zzz/workstation/Movie/Others";
+    
+    memset (&flagGroup, 0, sizeof(SFlagGroup));
+}
+
+void COption::Cleanup(){
+        if (optionList){
+            free(optionList);
+            optionList = nullptr;
+        }
+            
+        if (flagList){
+            free(flagList);
+            flagList = nullptr;
+        }
+}
+
+COption::~COption () {
+    Cleanup();
+}
+
 bool COption::add_flag_insert (SMapping* currentMapping){
     memcpy (&this->flagList[flagListIndex], currentMapping, sizeof(SMapping));
     flagListIndex++;

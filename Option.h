@@ -29,14 +29,9 @@ struct SMapping{
 class COption
 {
 private:
-    void Cleanup(){
-        if (optionList)
-            free(optionList);
-        if (flagList)
-            free(flagList);
-    }
+    
+            
 
-public:
 public:
     int m_argc;
     char** m_argv;
@@ -52,31 +47,11 @@ public:
 
     SOptionGroup optionGroup;
     SFlagGroup flagGroup;
-    
 
 public:
-    COption(){
-        m_argc = 0;
-        m_argv = nullptr;
-
-        optionListIndex = 0;
-        optionIndex = 0;
-        
-        flagListIndex = 0;
-        flagIndex = 0;
-
-
-        memset (&optionGroup, 0, sizeof(SOptionGroup));
-        optionGroup.workPath = "W:";
-        optionGroup.currentPath = "/zzz/workstation/Movie/Others";
-        
-        memset (&flagGroup, 0, sizeof(SFlagGroup));
-
-    }
-    ~COption(){
-        Cleanup();
-    }
-
+    COption();
+    ~COption();
+    void Cleanup();
     bool add_option_insert (SMapping* currentMapping);
 
     template <typename AssignTo>

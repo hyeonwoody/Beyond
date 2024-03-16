@@ -29,13 +29,13 @@
 class CMain
 {
 public:
-    COption option;
-    CJob job;
+    COption* option;
+    CJob* pJob;
     
-    
+
 public:
-    CMain(){
-    }
+    CMain();
+    ~CMain();
     void Init();
     int Main();
 

@@ -7,8 +7,18 @@
 /**
  * Proceed the jobs that is on pipe.
 */
+
+CMain::CMain(){
+    option = new COption();
+    pJob = new CJob();
+}
+CMain::~CMain(){
+    delete (option);
+    delete (pJob);
+}
+
 int CMain::ProceedJob() {
-    job.proceed(&option.optionGroup, &option.flagGroup);
+    pJob->proceed(&this->option->optionGroup, &this->option->flagGroup);
     return 0;
 }
 
@@ -22,35 +32,38 @@ int CMain::ProceedJob() {
 
 int CMain::SortJob(){
     
-    sort (this->job.jobList.begin(), this->job.jobList.end(), COMP_BY_INDEX);
+    sort (this->pJob->jobList.begin(), this->pJob->jobList.end(), COMP_BY_INDEX);
     return 0;
 }
 
 /**
  * Put the jobs on the pipe if it is used.
+ * @param optionList, flagList
+ * @return jobList
 */
 int CMain::ParseParam() {
 
-    SMapping* pOption = this->option.optionList;
+    SMapping* pOption = option->optionList;
+
     for (int i = 0; i<OPTION_NUM; i++){
         if (pOption->used && (pOption->index > 1 )){ //ommit workpath, currentpath and subject
-            job.pending(pOption);
+            pJob->pending(pOption);
         }
         pOption++;
     }
 
-    SMapping* pFlag = this->option.flagList;
+    SMapping* pFlag = option->flagList;
     for (int i = 0; i<FLAG_NUM; i++){
         if (pFlag->used){ //ommit workpath, currentpath and subject
-            job.pending(pFlag);
+            pJob->pending(pFlag);
         }
         pFlag++;
     }    
     
-    free(this->option.optionList);
-    this->option.optionList = nullptr;
-    free(this->option.flagList);
-    this->option.flagList = nullptr;
+    free(this->option->optionList);
+    this->option->optionList = nullptr;
+    free(this->option->flagList);
+    this->option->flagList = nullptr;
     return 0;
 }
 
@@ -118,8 +131,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     else {
-        CMain app; //Actual Program
-        COption* option = &app.option; //options in memory
+        CMain* app = new CMain(); //Actual Program
+        COption* option = app->option; //options in memory
         
         option->m_argc = argc;
         option->m_argv = argv;
@@ -138,7 +151,8 @@ int main(int argc, char* argv[]) {
         }
 
 
-        app.Main();
+        app->Main();
+        delete (app);
         return 0;
     }
 }
