@@ -7,22 +7,12 @@ class CJob
 {
 public:
 
-    struct STime{
-        int hour = 0;
-        int minute = 0;
-        int second = 0;
-        std::string source = "";
-        std::string name = "";
-        bool value = false;
-    };
-
     struct SClip{
         std::string source = "";
         std::string name = "";
         int startTime = 0;
         int endTime = 0;
     };
-
     class CSubJob
     {
     private:
@@ -45,7 +35,7 @@ public:
     };
 
     CJob();
-    virtual ~CJob(); 
+    ~CJob(); 
 
     
 
@@ -67,7 +57,6 @@ public:
     std::vector <SMapping*> jobList;
     bool pending (SMapping* job);
     bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-    virtual int proceed(CJob* job, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
     CSubJob* pSubJob;
     CTest* pTest; //for Test Purpose

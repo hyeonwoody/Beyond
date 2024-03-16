@@ -4,9 +4,8 @@ project(Beyond VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+add_subdirectory(feature)
 
-# include_directories(${AVCODEC_INCLU})
-# link_directories(${FFMPEG_LIB_DIR})
 
 
 set (FEATURES feature/VideoCut/VideoCut.cpp feature/UpdateDB/UpdateDB.cpp feature/SubJob.cpp feature/FileName/FileName.cpp feature/SymbolicLink/SymbolicLink.cpp )
@@ -28,14 +27,14 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 
-
-include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg/include)
+include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg)
 
 find_library(AVCODEC_LIBRARY avcodec PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavcodec)
-#find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libaformat)
+find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavformat)
 find_library(AVUTIL_LIBRARY avutil PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavutil)
+find_library(SWRESAMPLE_LIBRARY swresample PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libsresample)
 
-target_link_libraries(${PROJECT_NAME} ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} mariadbcpp pthread z swresample)
+target_link_libraries(${ME} PRIVATE ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${SWRESAMPLE_LIBRARY} pthread z)
 
 
 

@@ -1,9 +1,11 @@
-#include "Beyond.h"
+#include "./feature/VideoCut/VideoCut.h"
+
 
 #include "./feature/FileName/FileName.h"
 #include "./feature/SymbolicLink/SymbolicLink.h"
-#include "./feature/VideoCut/VideoCut.h"
+
 #include "./feature/UpdateDB/UpdateDB.h"
+#include "./feature/FeatureFactory.cpp"
 
 #define TEST 0
 
@@ -88,10 +90,6 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         std::cout << "Completed New Job : "<<currentJob->description<<std::endl;
     }
     return true;
-}
-
-int CJob::proceed(CJob* job, SOptionGroup* optionGroup, SFlagGroup* flagGroup) {
-    return 0;
 }
 
 bool CJob::pending(SMapping* job){
