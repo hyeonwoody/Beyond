@@ -15,7 +15,11 @@ A CLI-based program to enhance video editing convenience.
 </br>
 
  ## 🚀: Build & Run
- 1. Create a Build Directory:
+1. Install ffmpeg(4.4.4 ~ 5.1.x):
+```bash
+sudo apt install ffmpeg
+```
+2. Create a Build Directory:
  ```bash
  mkdir build
  cd build
