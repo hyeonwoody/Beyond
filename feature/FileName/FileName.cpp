@@ -218,3 +218,7 @@ int CFileName::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
     }
     return 1;
 }
+
+void CFileName::ThreadMain () {
+    
+}

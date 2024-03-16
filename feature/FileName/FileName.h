@@ -1,11 +1,15 @@
+#include "../Feature.h"
 #include "../../Job.h"
 #include "../../Parse.h"
 #include <map>
 #include <vector>
 
 
-class CFileName : public CJob
-    {
+class CFileName : public CFeature
+{
+
+    public :
+        static CFeature *Create() {return new CFileName();}
     public:
         std::map <std::string, int> format;
         std::string path;
@@ -37,7 +41,7 @@ class CFileName : public CJob
             
             format.insert({"extension", 7});
         }
-
+        ~CFileName();
         int proceed(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
         
         void setPath(std::string currentPath) {path = currentPath;};
@@ -50,4 +54,6 @@ class CFileName : public CJob
         std::string reelsParse(std::vector <std::string> fileName);
         std::string codecParse(std::vector <std::string> fileName);
         std::string extensionParse(std::vector <std::string> fileName);
-    };
+
+        void ThreadMain() override;
+};

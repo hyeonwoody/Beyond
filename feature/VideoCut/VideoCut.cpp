@@ -11,19 +11,10 @@
 
 #define LOG_VIDEOCUT 0
 
-extern "C" {
 
-    #include <libavutil/timestamp.h>
-    #include <libavformat/avformat.h>
-}
 
 #include <sys/stat.h> // mkdir
 
-
-struct SFile {
-    AVFormatContext *formatContext;
-    std::string fileName;
-};
 
 static void logPacket (const AVFormatContext *fmtContext, const AVPacket *pkt, const char *tag){
     AVRational *timeBase = &fmtContext->streams[pkt->stream_index]->time_base;
@@ -55,7 +46,7 @@ CVideoCut::STime* CVideoCut::parsePbf(std::string path, std::string file){
     std::string line;
     std::string tmp;
 
-    CVideoCut::STime* pTime;
+    STime* pTime;
 
     openFile.seekg(0, std::ios::end);
     size_t size = (size_t) openFile.tellg();
@@ -85,8 +76,8 @@ CVideoCut::STime* CVideoCut::parsePbf(std::string path, std::string file){
         
         numLine++;
     }
-    pTime = (CVideoCut::STime*)malloc(sizeof(CVideoCut::STime)*numLine);
-    memset(pTime, 0, sizeof(CVideoCut::STime)*numLine);
+    pTime = (STime*)malloc(sizeof(STime)*numLine);
+    memset(pTime, 0, sizeof(STime)*numLine);
     for (int i=0; i<numLine; i++){
         pTime[i].second = (stoi(number[i]) / 1000) % 60;
         pTime[i].minute = (stoi(number[i]) / 1000) / 60;
@@ -101,6 +92,11 @@ CVideoCut::STime* CVideoCut::parsePbf(std::string path, std::string file){
     return pTime;
 }
 
+
+
+void CVideoCut::ThreadMain(){
+
+}
 
 int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
     
@@ -124,14 +120,13 @@ int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
     
     AVOutputFormat *outputFormat = NULL;
     
-
     int ret = 0;
 
     int streamMappingSize = 0;
     int *streamMapping = NULL;
     int streamIndex = 0;
 
-    CVideoCut::STime* pTime = NULL;
+    STime* pTime = NULL;
     std::cout<<av_version_info()<<std::endl;
     for (int i=0; i<pbfList.size(); i++){
         pTime= parsePbf(path, pbfList[i]);
@@ -162,20 +157,23 @@ int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
     }
 
     free(pTime);
-
     mkdir ((path + folderName).c_str(), 0777);
 
     for (int i=0; i<clipList.size(); i++){
 
-        SFile input = {NULL, ""};
-        SFile output = {NULL, ""};
-        input.fileName = path + clipList[i]->source;
+        SFile input = {NULL, path + clipList[i]->source};
+        SFile output = {NULL,  path + folderName + "/" + clipList[i]->name+".mp4"};
         if ((ret = avformat_open_input(&input.formatContext, input.fileName.c_str(), NULL, NULL)) < 0){
             std::cout<<"Could not open source file : "<<input.fileName<<std::endl;
+            if (input.formatContext){
+                free(input.formatContext);
+            }
         }
-        output.fileName = (path + folderName) + "/" + clipList[i]->name+".mp4";
         if ((ret = avformat_find_stream_info(input.formatContext, 0)) < 0){
             std::cout<<"Could not find stream information"<<std::endl;
+            if (input.formatContext){
+                free(input.formatContext);
+            }
         }
     
         //dump input information to stderr
@@ -195,8 +193,8 @@ int CVideoCut::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagG
         int startTime = clipList[i]->startTime;
         int endTime =clipList[i]->endTime;
 
-        int *startSeconds = (int *) malloc (streamMappingSize * sizeof(int));
-        int *endSeconds = (int *) malloc (streamMappingSize * sizeof(int));
+        int64_t *startSeconds = (int64_t *) malloc (streamMappingSize * sizeof(int));
+        int64_t *endSeconds = (int64_t *) malloc (streamMappingSize * sizeof(int));
 
         outputFormat = output.formatContext->oformat;
 

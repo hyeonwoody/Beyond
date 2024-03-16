@@ -12,7 +12,6 @@
 #include <sys/types.h> //fstat
 
 int CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup){
-    
     std::string path = optionGroup->workPath + "/";
     std::string currentPath="";
     std::string currentTag = optionGroup->fileTag;
@@ -75,4 +74,8 @@ int CSymbolicLink::proceed (CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* f
     }
 
     return true;
+}
+
+void CSymbolicLink::ThreadMain() {
+    
 }

@@ -36,14 +36,19 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         std::cout << "On Process New Job : "<<currentJob->description<<std::endl;
         unsigned int index = currentJob->index;
         CJob* pJob = nullptr;
+        CFeature* pFeature = nullptr;
         switch (index){
             case 2:
                 if (currentJob->description[0] == 'O'){
-                    pJob = new CFileName();
+                    //pJob = new CFileName();
                     isOption = true;
+                    FeatureFactory::RegisterFeature ("FileName", CFileName::Create);
+                    pFeature = FeatureFactory::CreateFeature("FileName");
                 }
                 else {
-                    pJob = new CSymbolicLink();
+                    FeatureFactory::RegisterFeature ("SymbolicLink", CSymbolicLink::Create);
+                    //pJob = new CSymbolicLink();
+                    pFeature = FeatureFactory::CreateFeature("SymbolicLink");
                 }
                 break;
             case 3: //workpath
@@ -51,7 +56,10 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
                     isOption = true;
                 } 
                 else { //flagGroup
-                    pJob = new CVideoCut();
+                    FeatureFactory::RegisterFeature ("VideoCut", CVideoCut::Create);
+                    pFeature = FeatureFactory::CreateFeature ("VideoCut");
+                    //pFeature = new CVideoCut();
+                    
                 }
                 break;
             case 4: //
@@ -69,8 +77,12 @@ bool CJob::proceed(SOptionGroup* optionGroup, SFlagGroup* flagGroup){
         update
         #endif
         if (pJob){
-            pJob->proceed(this, optionGroup, flagGroup);
+            //pJob->proceed(this, optionGroup, flagGroup);
             delete (pJob);
+        }
+        if (pFeature){
+            pFeature->proceed(this, optionGroup, flagGroup);
+            delete (pFeature);
         }
         
         std::cout << "Completed New Job : "<<currentJob->description<<std::endl;
