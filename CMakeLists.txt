@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(Beyond VERSION 0.1.0)
 
 include(CTest)
+find_package(PkgConfig REQUIRED)
 enable_testing()
 
 add_subdirectory(feature)
@@ -25,16 +26,14 @@ add_executable(${PROJECT_NAME}
 set(ME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+set(AVCODEC_LIBRARY avcodec)
+set(AVFORMAT_LIBRARY avformat)
+set(AVUTIL_LIBRARY avutil)
+set(SWRESAMPLE_LIBRARY swresample)
 
+set(FFMPEG_LIBRARY ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVUTIL_LIBRARY} ${SWRESAMPLE_LIBRARY})
 
-include_directories(${CMAKE_SOURCE_DIR}/libs/FFmpeg)
-
-find_library(AVCODEC_LIBRARY avcodec PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavcodec)
-find_library(AVFORMAT_LIBRARY avformat PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavformat)
-find_library(AVUTIL_LIBRARY avutil PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libavutil)
-find_library(SWRESAMPLE_LIBRARY swresample PATHS ${CMAKE_SOURCE_DIR}/libs/FFmpeg/libsresample)
-
-target_link_libraries(${ME} PRIVATE ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${SWRESAMPLE_LIBRARY} pthread z)
+target_link_libraries(${ME} PRIVATE ${FFMPEG_LIBRARY} pthread)
 
 
 
