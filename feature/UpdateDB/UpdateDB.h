@@ -1,5 +1,7 @@
-#include "../../Beyond.h"
+
 #include "../../Job.h"
+
+#if DB
 
 #include <mariadb/conncpp.hpp>
 #include <vector>
@@ -10,3 +12,4 @@ class CUpdateDB{
     void VideoCut (std::unique_ptr<sql::Connection> &conn, std::vector<CJob::SClip *> clipList);
     int Update (int index, bool isOption);
 };
+#endif

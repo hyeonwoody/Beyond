@@ -1,9 +1,10 @@
 #include "UpdateDB.h"
-#include <mariadb/conncpp.hpp>
+
 #include <vector>
+#include <iostream>
 
-
-
+#if DB
+#include <mariadb/conncpp.hpp>
 
 static bool initDB = false;
 
@@ -144,3 +145,5 @@ int CUpdateDB::Update (int index, bool isOption){
     conn->close();
     return 0;
 }
+
+#endif
