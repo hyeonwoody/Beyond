@@ -6,10 +6,11 @@ find_package(PkgConfig REQUIRED)
 enable_testing()
 
 add_subdirectory(feature)
+add_subdirectory(libs)
 
 
 
-set (FEATURES feature/VideoCut/VideoCut.cpp feature/UpdateDB/UpdateDB.cpp feature/SubJob.cpp feature/FileName/FileName.cpp feature/SymbolicLink/SymbolicLink.cpp )
+set (FEATURES feature/VideoCut/VideoCut.cpp feature/UpdateDB/UpdateDB.cpp feature/SubJob.cpp ${FILENAME} feature/SymbolicLink/SymbolicLink.cpp )
 
 add_executable(${PROJECT_NAME}
     Job.h
