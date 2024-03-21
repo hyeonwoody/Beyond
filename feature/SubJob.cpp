@@ -1,7 +1,7 @@
 
 #include <dirent.h>
-#include "../Beyond.h"
-#include "../Parse.h"
+#include "Beyond.h"
+#include "Parse.h"
 #include <map>
 
     

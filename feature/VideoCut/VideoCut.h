@@ -3,8 +3,8 @@
 
 extern "C" {
 
-    #include <libavutil/timestamp.h>
-    #include <libavformat/avformat.h>
+    #include "../../libs/FFmpeg/libavutil/timestamp.h"
+    #include "../../libs/FFmpeg/libavformat/avformat.h"
 }
 
 class CVideoCut : public CFeature

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Job.h"
+#include "Job.h"
 
 class CFeature {
     public :

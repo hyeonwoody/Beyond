@@ -1,6 +1,6 @@
 #include "../Feature.h"
-#include "../../Job.h"
-#include "../../Parse.h"
+#include "Job.h"
+#include "Parse.h"
 #include <map>
 #include <vector>
 

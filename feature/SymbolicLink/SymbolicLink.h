@@ -1,5 +1,5 @@
 #include "../Feature.h"
-#include "../../Job.h"
+#include "Job.h"
 
 class CSymbolicLink : public CFeature
     {
