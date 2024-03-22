@@ -4,6 +4,15 @@ project(Beyond VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+if(UNIX)
+  exec_program("cat /etc/os-release | grep -i ubuntu" OUTPUT_VARIABLE UNAME)
+  if (NOT ${UNAME} STREQUAL "")
+    set(OS_RELEASE "ubuntu")
+  endif()
+endif()
+
+message (${OS_RELEASE})
+
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 include_directories(${INCLUDE_DIR})
@@ -13,7 +22,7 @@ set (FEATURE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/feature)
 include (${CMAKE_CURRENT_SOURCE_DIR}/libs/CMakeLists.txt)
 set (LIBS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
-set (CMAKE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE PATH APPEND)
+set (CMAKE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set (BASICS ${CMAKE_CURRENT_SOURCE_DIR}/Parse.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Option.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Job.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Beyond.cpp )
 set (FEATURES ${FEATURE_SOURCE_DIR}/VideoCut/VideoCut.cpp ${FEATURE_SOURCE_DIR}/UpdateDB/UpdateDB.cpp ${FEATURE_SOURCE_DIR}/SubJob.cpp ${FILENAME} ${FEATURE_SOURCE_DIR}/SymbolicLink/SymbolicLink.cpp )
 
