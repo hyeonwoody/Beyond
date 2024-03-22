@@ -2,8 +2,6 @@ set (LIBS_FFMPEG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/FFmpeg)
 
 message (${LIBS_FFMPEG_DIR})
 
-add_subdirectory(${LIBS_FFMPEG_DIR}/libavutil)
-
 find_library(LIBAVCODEC_LIBRARY libavcodec.so.58.134.100 libavcodec HINT PATHS ${LIBS_FFMPEG_DIR}/libavcodec)
 find_library(LIBAVDEVICE_LIBRARY libavdevice.so.58.8.100 libavdevice avdevice HINT PATHS ${LIBS_FFMPEG_DIR}/libavdevice)
 find_library(LIBAVFILTER_LIBRARY libavfilter.so.7.57.100 libavfilter avfilter HINT PATHS ${LIBS_FFMPEG_DIR}/libavfilter)
