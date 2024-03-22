@@ -37,29 +37,12 @@ public:
     CJob();
     ~CJob(); 
 
-    
-
-    class CTest
-    {
-    public:
-        CTest()
-        {
-            printf("Constructor : %x\n", this);
-        }
-        ~CTest()
-        {
-            printf("Destructor : %x\n", this);
-        }
-        int a;
-    };
-
 public:
     std::vector <SMapping*> jobList;
     bool pending (SMapping* job);
     bool proceed (SOptionGroup* optionGroup, SFlagGroup* flagGroup);
 
     CSubJob* pSubJob;
-    CTest* pTest; //for Test Purpose
     // ~CJob(){
     //     delete pSubJob;
     //     delete pFileName;

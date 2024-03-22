@@ -10,7 +10,6 @@
 #define TEST 0
 
 CJob:: CJob(){
-    pTest =nullptr;
     pSubJob = new CSubJob();
 }
 

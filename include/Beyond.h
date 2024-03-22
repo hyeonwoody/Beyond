@@ -46,5 +46,3 @@ public:
 private:
     
 };
-
-extern CMain app;
