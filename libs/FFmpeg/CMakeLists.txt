@@ -1,7 +1,7 @@
 
 set (LIBS_FFMPEG_DIR ${PROJECT_SOURCE_DIR}/libs/FFmpeg)
-
-message (${LIBS_FFMPEG_DIR})
+set (LIBS_FFMPEG_INCLUDE_DIR ${LIBS_FFMPEG_DIR}/include)
+message ("AAA${LIBS_FFMPEG_INCLUDE_DIR}")
 
 
 find_library(LIBAVCODEC_LIBRARY libavcodec.so.58.134.100 libavcodec HINT PATHS ${LIBS_FFMPEG_DIR})

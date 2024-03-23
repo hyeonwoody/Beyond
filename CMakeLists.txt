@@ -18,9 +18,8 @@ set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 include_directories(${INCLUDE_DIR})
 
-add_subdirectory (${PROJECT_SOURCE_DIR}/libs)
+include (${PROJECT_SOURCE_DIR}/libs/CMakeLists.txt)
 set (LIBS_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs)
-
 
 add_subdirectory (${PROJECT_SOURCE_DIR}/feature)
 set (FEATURE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/feature)
@@ -31,8 +30,9 @@ set (FEATURES ${FEATURE_SOURCE_DIR}/VideoCut/VideoCut.cpp ${FEATURE_SOURCE_DIR}/
 
 set(ME ${PROJECT_NAME})
 add_executable(${ME}
-    ${BASICS}
+    ${FFMPEG_INCLUDE_DIRS}
     ${FEATURES}
+    ${BASICS}
 )
 
 add_custom_target(clean_cmake

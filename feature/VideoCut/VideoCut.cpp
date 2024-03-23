@@ -15,6 +15,10 @@
 
 #include <sys/stat.h> // mkdir
 
+#include "../../libs/FFmpeg/include/libavutil/timestamp.h"
+#include "../../libs/FFmpeg/include/libavformat/avformat.h"
+#include "../../libs/FFmpeg/include/libavutil/avutil.h"
+
 
 static void logPacket (const AVFormatContext *fmtContext, const AVPacket *pkt, const char *tag){
     AVRational *timeBase = &fmtContext->streams[pkt->stream_index]->time_base;

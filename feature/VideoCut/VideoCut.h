@@ -1,11 +1,10 @@
 #include "../Feature.h"
 #include <vector>
 
-extern "C" {
+#include "../../libs/FFmpeg/include/libavutil/timestamp.h"
+#include "../../libs/FFmpeg/include/libavformat/avformat.h"
+#include "../../libs/FFmpeg/include/libavutil/avutil.h"
 
-    #include "../../libs/FFmpeg/libavutil/timestamp.h"
-    #include "../../libs/FFmpeg/libavformat/avformat.h"
-}
 
 class CVideoCut : public CFeature
 {
@@ -51,6 +50,6 @@ class CVideoCut : public CFeature
         int proceed (CJob* pjob, SOptionGroup* optionGroup, SFlagGroup* flagGroup) override;
         void ThreadMain() override;
         //int proceed_(CJob* pJob, SOptionGroup* optionGroup, SFlagGroup* flagGroup);
-        int setResult (int result) {this->result = result;};
+        int setResult (int result) {return this->result = result;};
         STime* parsePbf (std::string path, std::string file);
 };
