@@ -3,20 +3,22 @@ set (LIBS_FFMPEG_DIR ${PROJECT_SOURCE_DIR}/libs/FFmpeg)
 
 message (${LIBS_FFMPEG_DIR})
 
-find_library(LIBAVCODEC_LIBRARY libavcodec.so.58.134.100 libavcodec HINT PATHS ${LIBS_FFMPEG_DIR}/libavcodec)
-find_library(LIBAVDEVICE_LIBRARY libavdevice.so.58.8.100 libavdevice avdevice HINT PATHS ${LIBS_FFMPEG_DIR}/libavdevice)
-find_library(LIBAVFILTER_LIBRARY libavfilter.so.7.57.100 libavfilter avfilter HINT PATHS ${LIBS_FFMPEG_DIR}/libavfilter)
-find_library(LIBAVFORMAT_LIBRARY libavformat.so.58.76.100 libavformat HINT PATHS ${LIBS_FFMPEG_DIR}/libavformat)
-find_library(LIBAVUTIL_LIBRARY libavutil.so.56.70.100 libavutil HINT PATHS ${LIBS_FFMPEG_DIR}/libavutil)
-find_library(LIBSWRESAMPLE_LIBRARY libswresample.so.3.5.100 libswresample HINT PATHS ${LIBS_FFMPEG_DIR}/libswresample)
-find_library(LIBSWSCALE_LIBRARY libswscale.so.5.5.100 libswscale swscale HINT PATHS ${LIBS_FFMPEG_DIR}/libswscale)
 
-set (FFMPEG_LIBRARY "${LIBAVCODEC_LIBRARY} ${LIBAVDEVICE_LIBRARY} ${LIBAVFILTER_LIBRARY} ${LIBAVFORMAT_LIBRARY} ${LIBAVUTIL_LIBRARY} ${LIBSWRESAMPLE_LIBRARY} ${LIBSWSCALE_LIBRARY}")
+find_library(LIBAVCODEC_LIBRARY libavcodec.so.58.134.100 libavcodec HINT PATHS ${LIBS_FFMPEG_DIR})
+message("FFFAC${LIBAVCODEC_LIBRARY}")
+find_library(LIBAVDEVICE_LIBRARY libavdevice.so.58.8.100 libavdevice avdevice HINT PATHS ${LIBS_FFMPEG_DIR})
+find_library(LIBAVFILTER_LIBRARY libavfilter.so.7.57.100 libavfilter avfilter HINT PATHS ${LIBS_FFMPEG_DIR})
+find_library(LIBAVFORMAT_LIBRARY libavformat.so.58.76.100 libavformat HINT PATHS ${LIBS_FFMPEG_DIR})
+find_library(LIBAVUTIL_LIBRARY libavutil.so.56.70.100 libavutil HINT PATHS ${LIBS_FFMPEG_DIR})
+find_library(LIBSWRESAMPLE_LIBRARY libswresample.so.3.5.100 libswresample HINT PATHS ${LIBS_FFMPEG_DIR})
+find_library(LIBSWSCALE_LIBRARY libswscale.so.5.5.100 libswscale swscale HINT PATHS ${LIBS_FFMPEG_DIR})
+
+set (FFMPEG_LIBRARY ${LIBAVCODEC_LIBRARY} ${LIBAVDEVICE_LIBRARY} ${LIBAVFILTER_LIBRARY} ${LIBAVFORMAT_LIBRARY} ${LIBAVUTIL_LIBRARY} ${LIBSWRESAMPLE_LIBRARY} ${LIBSWSCALE_LIBRARY})
 
 
 if(UNIX)
     if(${OS_RELEASE} STREQUAL "ubuntu")
-        install(FILES ${FFMPEG_LIBRARY} DESTINATION lib COMPONENT MyLibrary)
+        install(FILES ${FFMPEG_LIBRARY} DESTINATION lib COMPONENT FFMPEG_LIBRARY)
         
     endif()
 endif()
