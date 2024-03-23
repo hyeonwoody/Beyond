@@ -3,6 +3,13 @@ set (LIBS_FFMPEG_DIR ${PROJECT_SOURCE_DIR}/libs/FFmpeg)
 set (LIBS_FFMPEG_INCLUDE_DIR ${LIBS_FFMPEG_DIR}/include)
 message ("AAA${LIBS_FFMPEG_INCLUDE_DIR}")
 
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libavcodec/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libavdevice/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libavfilter/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libavformat/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libavutil/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libswresample/CMakeLists.txt)
+include (${LIBS_FFMPEG_INCLUDE_DIR}/libswrescale/CMakeLists.txt)
 
 find_library(LIBAVCODEC_LIBRARY libavcodec.so.58.134.100 libavcodec HINT PATHS ${LIBS_FFMPEG_DIR})
 message("FFFAC${LIBAVCODEC_LIBRARY}")
