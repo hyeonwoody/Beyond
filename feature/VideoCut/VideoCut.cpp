@@ -1,6 +1,5 @@
 
 #include "VideoCut.h"
-
 #include <iostream>
 #include <fstream>
 #include <codecvt>

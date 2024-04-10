@@ -1,6 +1,5 @@
-#pragma once
+#include <pthread.h>
 #include <string>
-#include <cstring>
 struct SOptionGroup{
     std::string workPath;
     std::string currentPath;

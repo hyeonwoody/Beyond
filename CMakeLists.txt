@@ -14,9 +14,7 @@ endif()
 
 message (${OS_RELEASE})
 
-set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-
-include_directories(${INCLUDE_DIR})
+include (${PROJECT_SOURCE_DIR}/include/CMakeLists.txt)
 
 include (${PROJECT_SOURCE_DIR}/libs/CMakeLists.txt)
 set (LIBS_SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs)
@@ -30,7 +28,6 @@ set (FEATURES ${FEATURE_SOURCE_DIR}/VideoCut/VideoCut.cpp ${FEATURE_SOURCE_DIR}/
 
 set(ME ${PROJECT_NAME})
 add_executable(${ME}
-    ${FFMPEG_INCLUDE_DIRS}
     ${FEATURES}
     ${BASICS}
 )
@@ -43,7 +40,7 @@ add_custom_target(clean_cmake
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 message("FFDV${FFMPEG_LIBRARY}")
-target_link_libraries(${ME} PRIVATE ${FFMPEG_LIBRARY} pthread)
+target_link_libraries(${ME} PRIVATE ${FFMPEG_LIBRARY})
 
 
 

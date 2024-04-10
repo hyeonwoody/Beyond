@@ -1,4 +1,4 @@
-#pragma once
+
 #include "Option.h"
 #include <vector>
 #include <string>
