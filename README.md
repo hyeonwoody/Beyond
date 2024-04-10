@@ -4,11 +4,11 @@ A CLI-based program to enhance video editing convenience.
 </br>
 
 ## 🧑‍💻: Intro
-❓ Problem : Needs to cut in time for editing video 😮
+❓Problem : Needs to cut in time for editing video 😮
 
-‼ Idea : Organizing video footages in right order and right place consumes a lot of time 🤔
+❗Idea : Organizing video footages in right order and right place consumes a lot of time 🤔
 
-💯 Solution : AUTOMATION 😁
+💯Solution : AUTOMATION 😁
 
  I develop it for my own good.  
  
