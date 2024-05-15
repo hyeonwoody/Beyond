@@ -9,37 +9,42 @@ A CLI-based program to enhance video editing convenience.
 ❗Idea : Organizing video footages in right order and right place consumes a lot of time 🤔
 
 💯Solution : AUTOMATION 😁
-
- I develop it for my own good.  
+ 
  
 </br>
 
  ## 🚀: Build & Run
+0. Run ./app.sh
+    ```
+    bash ./app.sh
+    ```
+    **If the script executes without errors, you can skip the following steps.**
+ ---
 1. Install ffmpeg(4.4.4 ~ 5.1.x):
-```bash
-sudo apt install ffmpeg
-```
+    ```bash
+    sudo apt install ffmpeg
+    ```
 2. Create a Build Directory:
- ```bash
- mkdir build
- cd build
- ```
+    ```bash
+    mkdir build
+    cd build
+    ```
  
- 2. Generate Build Files with CMake:
- ```bash
- cmake ..
- ```
+3. Generate Build Files with CMake:
+    ```bash
+    cmake ..
+    ```
 
-3. Build the Project:
-```bash
-make
-```
+4. Build the Project:
+    ```bash
+    make
+    ```
 
 
-4. Run the Excutable:
-```bash
-./Beyond
-```
+5. Run the Excutable:
+    ```bash
+    ./Beyond
+    ```
 
 
  ## ✅: Implementation 
