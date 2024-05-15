@@ -34,8 +34,8 @@ class CFileName : public CFeature
             
             format.insert({"resolution", 4});
             
-            format.insert({"reel", 5});
-            format.insert({"reels", 5});
+            format.insert({"cut", 5});
+            format.insert({"cuts", 5});
             
             format.insert({"codec", 6});
             
@@ -51,7 +51,7 @@ class CFileName : public CFeature
         std::string episodeParse(std::string tag, std::vector <std::string> fileName);
         std::string dateParse(std::vector <std::string> fileName);
         std::string resolutionParse(int length, std::vector <std::string> fileName);
-        std::string reelsParse(std::vector <std::string> fileName);
+        std::string cutParse(std::vector <std::string> fileName);
         std::string codecParse(std::vector <std::string> fileName);
         std::string extensionParse(std::vector <std::string> fileName);
 

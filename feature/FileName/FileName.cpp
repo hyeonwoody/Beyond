@@ -11,7 +11,7 @@ std::string CFileName::codecParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 } 
 
-std::string CFileName::reelsParse (std::vector <std::string> fileName){
+std::string CFileName::cutParse (std::vector <std::string> fileName){
     return fileName[nameIndex];
 }
 
@@ -103,8 +103,8 @@ std::string CFileName::formatParse(int order,std::vector <std::string> fileTag, 
             name = resolutionParse(length, fileName);
             nameIndex++;
             break;
-        case 5: //reels
-            name = reelsParse(fileName);
+        case 5: //cut
+            name = cutParse(fileName);
             nameIndex++;
             break;
         case 6: //codec
